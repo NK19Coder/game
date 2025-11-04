@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zontal Clone</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">🔥 ZONTAL</div>
+    <nav class="nav-links">
+      <a href="#">Newest</a>
+      <a href="#">Most popular</a>
+      <a href="#">Random</a>
+    </nav>
+    <div class="search-bar">
+      <input type="text" placeholder="Search..." />
+    </div>
+    <div class="auth-links">
+      <a href="/login">Login</a>
+      <a href="/signup" class="signup">Sign up</a>
+    </div>
+  </header>
+
+  <div class="categories">
+    <button>Arcade</button>
+    <button>Puzzles</button>
+    <button>Shooting</button>
+    <button>Racing</button>
+    <button>Adventure</button>
+    <button>Multiplayer</button>
+    <button>Action</button>
+    <button>Sports</button>
+  </div>
+
+  <main class="game-grid">
+    <% games.forEach(game => { %>
+      <div class="game-card">
+        <img src="<%= game.image %>" alt="<%= game.title %>" />
+        <div class="game-title"><%= game.title %></div>
+      </div>
+    <% }) %>
+  </main>
+  <!-- Login Button -->
+<button id="loginBtn" class="login-btn">Login</button>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Select Login Type</h2>
+    <div class="login-options">
+      <button onclick="window.location.href='/admin-login'">Login as Admin</button>
+      <button onclick="alert('User login coming soon!')">Login as User</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('loginModal');
+  const btn = document.getElementById('loginBtn');
+  const span = document.getElementsByClassName('close')[0];
+  btn.onclick = () => modal.style.display = "block";
+  span.onclick = () => modal.style.display = "none";
+  window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
+</script>
+
+</body>
+</html>

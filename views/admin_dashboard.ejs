@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <style>
+    body {
+      background: #0d0d0f;
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+    }
+
+    .topbar {
+      background: #141416;
+      padding: 14px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #202022;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: #ff4747;
+    }
+
+    nav a {
+      margin-left: 12px;
+      text-decoration: none;
+      color: #fff;
+      background: #ff4747;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      background: #ff5d5d;
+      transform: scale(1.05);
+    }
+
+    .container {
+      padding: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    h3 {
+      margin-top: 0;
+    }
+
+    .admin-grid {
+      display: flex;
+      gap: 24px;
+    }
+
+    .panel {
+      background: #18181b;
+      border-radius: 12px;
+      padding: 20px;
+      flex: 1;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    input, textarea {
+      width: 100%;
+      background: #202024;
+      border: 1px solid #2a2a2f;
+      border-radius: 8px;
+      padding: 10px;
+      color: white;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    button.btn {
+      background: #ff4747;
+      border: none;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 600;
+    }
+
+    button.btn:hover {
+      background: #ff5d5d;
+      transform: scale(1.05);
+    }
+
+    .list-item {
+      background: #202024;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .list-item img {
+      width: 100px;
+      height: 70px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .actions button {
+      background: #333;
+      border: none;
+      color: #ff4747;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .actions button:hover {
+      background: #ff4747;
+      color: #fff;
+    }
+
+    @media (max-width: 900px) {
+      .admin-grid {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container top-inner">
+      <a href="/" class="logo">Game<span>Zone</span></a>
+      <nav>
+        <a class="btn" href="/">Home</a>
+        <a class="btn" href="/admin/logout">Logout</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="admin-grid">
+      <div class="panel add">
+        <h3>Add New Game</h3>
+        <form method="POST" action="/admin/games/add" enctype="multipart/form-data">
+          <input type="text" name="title" placeholder="Game Title" required>
+          <textarea name="short_desc" placeholder="Short Description"></textarea>
+          <input type="text" name="imageurl" placeholder="Image URL (optional)">
+          <p>OR Upload Image:</p>
+          <input type="file" name="imagefile" accept="image/*">
+          <button class="btn" type="submit">Add Game</button>
+        </form>
+      </div>
+
+      <div class="panel list">
+        <h3>Existing Games</h3>
+        <div class="list-wrap">
+          <% if (games.length === 0) { %>
+            <p>No games yet.</p>
+          <% } else { %>
+            <% games.forEach(game => { %>
+              <div class="list-item">
+                <% if (game.image) { %>
+                  <img src="<%= game.image %>" alt="">
+                <% } else { %>
+                  <div class="img-mini">No Image</div>
+                <% } %>
+                <div class="info">
+                  <h4><%= game.title %></h4>
+                  <p><%= game.short_desc %></p>
+                </div>
+                <div class="actions">
+                  <form method="POST" action="/admin/games/delete/<%= game.id %>">
+                    <button>🗑 Delete</button>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
