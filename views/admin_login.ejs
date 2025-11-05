@@ -4,12 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Login | GameZone</title>
-  <link rel="stylesheet" href="/css/admin.css" />
+  <link rel="icon" type="image/png" href="/favicon.png">
   <style>
+    /* General Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at top left, #111, #000);
-      color: white;
+      background: radial-gradient(circle at top left, #141414, #000);
+      color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -17,22 +24,33 @@
       overflow: hidden;
     }
 
-    .login-card {
+    .login-container {
+      position: relative;
+      width: 380px;
+      padding: 40px 30px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 40px;
       border-radius: 16px;
-      width: 360px;
-      box-shadow: 0 0 40px rgba(255, 75, 75, 0.15);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 0 30px rgba(255, 71, 71, 0.2);
+      backdrop-filter: blur(12px);
       animation: fadeIn 0.8s ease forwards;
     }
 
-    .login-card h2 {
+    .login-header {
       text-align: center;
       margin-bottom: 25px;
-      font-size: 26px;
+    }
+
+    .login-header h2 {
+      font-size: 28px;
       color: #ff4747;
+      font-weight: 700;
+    }
+
+    .login-header p {
+      color: #ccc;
+      font-size: 14px;
+      margin-top: 5px;
     }
 
     form {
@@ -49,7 +67,7 @@
       color: white;
       outline: none;
       font-size: 14px;
-      transition: 0.2s;
+      transition: all 0.3s ease;
     }
 
     input:focus {
@@ -67,6 +85,7 @@
       font-weight: 600;
       font-size: 15px;
       transition: 0.3s;
+      letter-spacing: 0.5px;
     }
 
     button:hover {
@@ -78,24 +97,61 @@
       text-align: center;
       font-size: 13px;
       color: #ccc;
-      margin-top: 8px;
+      margin-top: 10px;
     }
 
+    .note b {
+      color: #ff4747;
+    }
+
+    /* Animation */
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Glow Animation */
+    .glow {
+      position: absolute;
+      top: -100px;
+      left: -100px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255,71,71,0.5), transparent 70%);
+      filter: blur(50px);
+      animation: moveGlow 6s infinite alternate;
+    }
+
+    @keyframes moveGlow {
+      from { transform: translate(0, 0); }
+      to { transform: translate(150px, 150px); }
     }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <h2>Admin Login</h2>
+  <div class="glow"></div>
+
+  <div class="login-container">
+    <div class="login-header">
+      <h2>Game<span style="color:#fff;">Zone</span> Admin</h2>
+      <p>Login to manage games</p>
+    </div>
+
     <form action="/admin/login" method="POST">
       <input type="text" name="username" placeholder="Enter Username" required>
       <input type="password" name="password" placeholder="Enter Password" required>
       <button type="submit">Login</button>
     </form>
-    <div class="note">For testing → Username: <b>admin</b> | Password: <b>12345</b></div>
+
+    <div class="note">
+      Demo → Username: <b>admin</b> | Password: <b>12345</b>
+    </div>
   </div>
 </body>
 </html>

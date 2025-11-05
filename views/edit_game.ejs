@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Game | GameZone</title>
+  <style>
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      padding: 40px; 
+      background: #0d0d0f; 
+      color: white; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+    }
+    h2 { color: #ff4747; }
+    form { 
+      background: #18181b; 
+      padding: 25px; 
+      border-radius: 12px; 
+      box-shadow: 0 0 15px rgba(255,71,71,0.2); 
+      width: 380px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px;
+    }
+    input, textarea {
+      background: #202024;
+      border: 1px solid #2a2a2f;
+      border-radius: 8px;
+      padding: 10px;
+      color: white;
+      font-size: 14px;
+      resize: none;
+    }
+    button {
+      background: #ff4747;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #ff5d5d;
+      transform: scale(1.05);
+    }
+    a {
+      color: #ff4747;
+      text-decoration: none;
+      margin-top: 20px;
+    }
+    img {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>✏️ Edit Game</h2>
+
+  <!-- form -->
+  <form method="POST" action="/admin/games/edit/<%= game.id %>" enctype="multipart/form-data">
+    <% if (game.image) { %>
+      <img src="<%= game.image %>" alt="Current Image">
+    <% } %>
+
+    <input type="text" name="title" value="<%= game.title %>" required>
+    <textarea name="short_desc" required><%= game.short_desc %></textarea>
+    <input type="text" name="imageurl" placeholder="Or paste Image URL" value="<%= game.image %>">
+    <p>Or upload new image:</p>
+    <input type="file" name="imagefile" accept="image/*">
+    <button type="submit">💾 Save Changes</button>
+  </form>
+
+  <a href="/admin/dashboard">⬅️ Back to Dashboard</a>
+</body>
+</html>

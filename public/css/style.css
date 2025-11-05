@@ -97,17 +97,27 @@ body {
 
 /* Game grid */
 .game-grid {
+  --card-w: 180px;            
+  --gap: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, var(--card-w));
+  gap: var(--gap);
   padding: 30px 50px;
+  /* justify-content: center; */
 }
 
 .game-card {
+  width: var(--card-w);
   background-color: #1a1a1a;
   border-radius: 15px;
   overflow: hidden;
   transition: 0.3s;
+  position: relative; /* for title overlay */
+}
+
+
+.game-card a{
+  display: block;
 }
 
 .game-card img {
@@ -122,10 +132,30 @@ body {
   box-shadow: 0 0 15px rgba(255, 98, 0, 0.3);
 }
 
+/* Title overlay: hidden by default, revealed on hover or focus */
 .game-title {
-  padding: 10px;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 10px;
+  padding: 8px 10px;
   text-align: center;
-  font-weight: 500;
+  font-weight: 600;
+  background: rgba(0,0,0,0.55);
+  border-radius: 8px;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none; /* avoid interfering with hover */
+}
+
+.game-card:hover .game-title,
+.game-card:focus-within .game-title,
+.game-card:focus .game-title {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 .login-btn {
   background: #ff4757;
@@ -138,7 +168,7 @@ body {
   top: 15px;
   right: 15px;
   font-weight: 600;
-  transition: 0.3s;
+  transition: 0.3s; 
 }
 .login-btn:hover {
   background: #e84118;

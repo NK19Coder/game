@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="/public/css/admin.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | GameZone</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
   <style>
     body {
       background: #0d0d0f;
@@ -20,6 +20,7 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid #202022;
+      flex-wrap: wrap;
     }
 
     .logo {
@@ -33,14 +34,20 @@
       color: #ff4747;
     }
 
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
     nav a {
-      margin-left: 12px;
       text-decoration: none;
       color: #fff;
       background: #ff4747;
       padding: 8px 14px;
       border-radius: 8px;
       transition: 0.3s;
+      font-size: 14px;
     }
 
     nav a:hover {
@@ -54,21 +61,28 @@
       margin: auto;
     }
 
-    h3 {
-      margin-top: 0;
-    }
-
     .admin-grid {
       display: flex;
       gap: 24px;
+      flex-wrap: wrap;
     }
 
     .panel {
       background: #18181b;
       border-radius: 12px;
       padding: 20px;
-      flex: 1;
+      flex: 1 1 48%;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      min-width: 320px;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
     }
 
     input, textarea {
@@ -78,8 +92,13 @@
       border-radius: 8px;
       padding: 10px;
       color: white;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #ff4747;
     }
 
     button.btn {
@@ -106,6 +125,12 @@
       display: flex;
       align-items: center;
       gap: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .list-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(255, 71, 71, 0.1);
     }
 
     .list-item img {
@@ -115,6 +140,13 @@
       object-fit: cover;
     }
 
+    .actions {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .actions button {
       background: #333;
       border: none;
@@ -122,6 +154,8 @@
       border-radius: 6px;
       padding: 6px 10px;
       cursor: pointer;
+      transition: 0.3s;
+      font-size: 13px;
     }
 
     .actions button:hover {
@@ -129,66 +163,164 @@
       color: #fff;
     }
 
-    @media (max-width: 900px) {
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #18181b;
+      padding: 25px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 15px rgba(255, 71, 71, 0.3);
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      color: #ff4747;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
       .admin-grid {
         flex-direction: column;
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      nav a {
+        padding: 6px 10px;
+        font-size: 13px;
       }
     }
   </style>
 </head>
 <body>
   <div class="topbar">
-    <div class="container top-inner">
-      <a href="/" class="logo">Game<span>Zone</span></a>
-      <nav>
-        <a class="btn" href="/">Home</a>
-        <a class="btn" href="/admin/logout">Logout</a>
-      </nav>
-    </div>
+    <a href="/" class="logo">Game<span>Zone</span></a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/admin/logout">Logout</a>
+    </nav>
   </div>
 
   <div class="container">
+    <h2>🎮 Admin Dashboard</h2>
     <div class="admin-grid">
-      <div class="panel add">
+      <!-- Add New Game -->
+      <div class="panel">
         <h3>Add New Game</h3>
         <form method="POST" action="/admin/games/add" enctype="multipart/form-data">
-          <input type="text" name="title" placeholder="Game Title" required>
+          <input type="text" name="title" placeholder="Game Title" required />
           <textarea name="short_desc" placeholder="Short Description"></textarea>
-          <input type="text" name="imageurl" placeholder="Image URL (optional)">
-          <p>OR Upload Image:</p>
-          <input type="file" name="imagefile" accept="image/*">
+          <input type="text" name="imageurl" placeholder="Image URL (optional)" />
+          <p>or Upload Image:</p>
+          <input type="file" name="imagefile" accept="image/*" />
+          <input type="url" name="gamelink" placeholder="Game Link (https://...)" required />
+
           <button class="btn" type="submit">Add Game</button>
         </form>
       </div>
 
-      <div class="panel list">
+      <!-- Game List -->
+      <div class="panel">
         <h3>Existing Games</h3>
-        <div class="list-wrap">
-          <% if (games.length === 0) { %>
-            <p>No games yet.</p>
-          <% } else { %>
-            <% games.forEach(game => { %>
-              <div class="list-item">
-                <% if (game.image) { %>
-                  <img src="<%= game.image %>" alt="">
-                <% } else { %>
-                  <div class="img-mini">No Image</div>
-                <% } %>
-                <div class="info">
-                  <h4><%= game.title %></h4>
-                  <p><%= game.short_desc %></p>
-                </div>
-                <div class="actions">
-                  <form method="POST" action="/admin/games/delete/<%= game.id %>">
-                    <button>🗑 Delete</button>
-                  </form>
-                </div>
+        <% if (games && games.length > 0) { %>
+          <% games.forEach(game => { %>
+            <div class="list-item">
+              <img src="<%= game.image || '/default.jpg' %>" alt="<%= game.title %>">
+              <div>
+                <h4><%= game.title %></h4>
+                <p><%= game.short_desc %></p>
               </div>
-            <% }) %>
-          <% } %>
-        </div>
+
+              <div class="actions">
+                <% if (game.game_link) { %>
+                  <a href="<%= game.game_link %>" target="_blank" rel="noopener noreferrer" class="btn" style="text-decoration:none;padding:6px 10px;background:#2a2a2f;border-radius:6px;">▶️ Play</a>
+                <% } %>
+                <button type="button"
+                  data-id="<%= game.id %>"
+                  data-title="<%= encodeURIComponent(game.title || '') %>"
+                  data-desc="<%= encodeURIComponent(game.short_desc || '') %>"
+                  data-image="<%= encodeURIComponent(game.image || '') %>"
+                  data-link="<%= encodeURIComponent(game.game_link || '') %>" 
+                  onclick="openEditModalFromButton(this)">✏️ Edit</button>
+                <form method="POST" action="/admin/games/delete/<%= game.id %>" onsubmit="return confirm('Delete this game?');">
+                  <button type="submit">🗑 Delete</button>
+                </form>
+              </div>
+
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p>No games yet.</p>
+        <% } %>
       </div>
     </div>
   </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeEditModal()">&times;</span>
+      <h3>Edit Game</h3>
+      <form id="editForm" method="POST" enctype="multipart/form-data">
+        <input type="text" id="editTitle" name="title" placeholder="Game Title" required />
+        <textarea id="editDesc" name="short_desc" placeholder="Short Description"></textarea>
+        <input type="text" id="editImageURL" name="imageurl" placeholder="Image URL (optional)" />
+        <p>or Upload New Image:</p>
+        <input type="file" name="imagefile" accept="image/*" />
+        <input type="url" id="editGameLink" name="gamelink" placeholder="Game Link (https://...)" />
+        <button class="btn" type="submit">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openEditModalFromButton(btn) {
+      const id = btn.dataset.id;
+      const title = decodeURIComponent(btn.dataset.title || '');
+      const desc = decodeURIComponent(btn.dataset.desc || '');
+      const image = decodeURIComponent(btn.dataset.image || '');
+      const link = decodeURIComponent(btn.dataset.link || '');
+
+      const modal = document.getElementById('editModal');
+      modal.style.display = 'flex';
+      document.getElementById('editTitle').value = title;
+      document.getElementById('editDesc').value = desc;
+      document.getElementById('editImageURL').value = image || '';
+      document.getElementById('editGameLink').value = link || '';
+      document.getElementById('editForm').action = `/admin/games/edit/${id}`; 
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('editModal');
+      if (event.target == modal) modal.style.display = "none";
+    };
+
+    // ESC key closes modal
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeEditModal();
+    });
+  </script>
 </body>
 </html>

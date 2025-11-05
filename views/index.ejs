@@ -15,7 +15,7 @@
       <a href="#">Random</a>
     </nav>
     <div class="search-bar">
-      <input type="text" placeholder="Search..." />
+      <input type="text" id="searchInput" placeholder="Search games..." />
     </div>
     <div class="auth-links">
       <a href="/login">Login</a>
@@ -34,14 +34,24 @@
     <button>Sports</button>
   </div>
 
-  <main class="game-grid">
-    <% games.forEach(game => { %>
-      <div class="game-card">
+  <main class="game-grid" id="gameGrid">
+  <% games.forEach(game => { %>
+    <div
+      class="game-card"
+      tabindex="0"
+      data-title="<%= (game.title || '').toLowerCase() %>"
+      data-desc="<%= (game.short_desc || '').toLowerCase() %>">
+      <a href="/play/<%= game.id %>" target="_blank" rel="noopener noreferrer">
         <img src="<%= game.image %>" alt="<%= game.title %>" />
         <div class="game-title"><%= game.title %></div>
-      </div>
-    <% }) %>
-  </main>
+      </a>
+    </div>
+  <% }) %>
+  <div id="noResults" style="display:none;text-align:center;grid-column:1/-1;padding:40px;color:#666;">
+    No games found matching your search
+  </div>
+</main> 
+
   <!-- Login Button -->
 <button id="loginBtn" class="login-btn">Login</button>
 
@@ -56,6 +66,64 @@
     </div>
   </div>
 </div>
+<script>
+  (function () {
+    const input = document.getElementById('searchInput');
+    const cards = Array.from(document.querySelectorAll('.game-card'));
+    const noResults = document.getElementById('noResults');
+
+    // Read initial query from URL (?q=...)
+    const params = new URLSearchParams(window.location.search);
+    const initialQ = (params.get('q') || '').trim();
+    if (initialQ) input.value = initialQ;
+
+    function normalize(s){ return (s || '').toLowerCase().trim(); }
+
+    let debounce;
+    function applyFilter(raw) {
+      const q = normalize(raw);
+      let visible = 0;
+
+      cards.forEach(card => {
+        const title = card.dataset.title || '';
+        const desc  = card.dataset.desc || '';
+        const match = !q || title.includes(q) || desc.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+
+      noResults.style.display = visible ? 'none' : '';
+
+      // Update ?q= in URL without reloading
+      const usp = new URLSearchParams(window.location.search);
+      if (q) usp.set('q', q); else usp.delete('q');
+      const newUrl = window.location.pathname + (usp.toString() ? `?${usp}` : '');
+      window.history.replaceState(null, '', newUrl);
+    }
+
+    // Debounce input for smoother typing
+    input.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => applyFilter(input.value), 120);
+    });
+
+    // Enter to open first visible card
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const first = cards.find(c => c.style.display !== 'none');
+        if (first) {
+          const a = first.querySelector('a[href]');
+          if (a) a.click();
+        }
+      }
+    });
+
+    // Run once on page load
+    applyFilter(input.value);
+  })();
+</script>
+
 
 <script>
   const modal = document.getElementById('loginModal');
