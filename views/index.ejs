@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -50,13 +50,13 @@
   <div id="noResults" style="display:none;text-align:center;grid-column:1/-1;padding:40px;color:#666;">
     No games found matching your search
   </div>
-</main> 
+</main>  -->
 
   <!-- Login Button -->
-<button id="loginBtn" class="login-btn">Login</button>
+<!-- <button id="loginBtn" class="login-btn">Login</button> -->
 
 <!-- Login Modal -->
-<div id="loginModal" class="modal">
+<!-- <div id="loginModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Select Login Type</h2>
@@ -70,10 +70,10 @@
   (function () {
     const input = document.getElementById('searchInput');
     const cards = Array.from(document.querySelectorAll('.game-card'));
-    const noResults = document.getElementById('noResults');
+    const noResults = document.getElementById('noResults'); -->
 
-    // Read initial query from URL (?q=...)
-    const params = new URLSearchParams(window.location.search);
+    <!-- // Read initial query from URL (?q=...) -->
+    <!-- const params = new URLSearchParams(window.location.search);
     const initialQ = (params.get('q') || '').trim();
     if (initialQ) input.value = initialQ;
 
@@ -134,5 +134,157 @@
   window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
 </script>
 
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zontal Clone</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">🔥 ZONTAL</div>
+    <nav class="nav-links">
+      <a href="#">Newest</a>
+      <a href="#">Most popular</a>
+      <a href="#">Random</a>
+    </nav>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off" />
+    </div>
+    <div class="auth-links">
+      <a href="/login">Login</a>
+      <a href="/signup" class="signup">Sign up</a>
+    </div>
+  </header>
+
+  <div class="categories">
+    <button>Arcade</button>
+    <button>Puzzles</button>
+    <button>Shooting</button>
+    <button>Racing</button>
+    <button>Adventure</button>
+    <button>Multiplayer</button>
+    <button>Action</button>
+    <button>Sports</button>
+  </div>
+
+  <main class="game-grid" id="gameGrid">
+    <% games.forEach(game => { %>
+      <div
+        class="game-card"
+        tabindex="0"
+        data-title="<%= (game.title || '').toLowerCase() %>"
+        data-desc="<%= (game.short_desc || '').toLowerCase() %>">
+        <a href="/play/<%= game.id %>" target="_blank" rel="noopener noreferrer" aria-label="Play <%= game.title %>">
+          <img
+            src="<%= game.image || '/placeholder.png' %>"
+            alt="<%= game.title || 'Game image' %>"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='/placeholder.png';" />
+          <div class="game-title"><%= game.title %></div>
+        </a>
+      </div>
+    <% }) %>
+    <div id="noResults" style="display:none;text-align:center;grid-column:1/-1;padding:40px;color:#666;">
+      No games found matching your search
+    </div>
+  </main>
+
+  <!-- Login Button -->
+  <button id="loginBtn" class="login-btn">Login</button>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <span class="close" aria-label="Close">&times;</span>
+      <h2 id="loginTitle">Select Login Type</h2>
+      <div class="login-options">
+        <button onclick="window.location.href='/admin-login'">Login as Admin</button>
+        <button onclick="alert('User login coming soon!')">Login as User</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const input = document.getElementById('searchInput');
+      const cards = Array.from(document.querySelectorAll('.game-card'));
+      const noResults = document.getElementById('noResults');
+
+      // Pick up initial query from URL (?q=...)
+      const params = new URLSearchParams(window.location.search);
+      const initialQ = (params.get('q') || '').trim();
+      if (initialQ) input.value = initialQ;
+
+      const normalize = s => (s || '').toLowerCase().trim();
+
+      function applyFilter(raw) {
+        const q = normalize(raw);
+        let visible = 0;
+
+        cards.forEach(card => {
+          const title = card.dataset.title || '';
+          const desc  = card.dataset.desc || '';
+          const match = !q || title.includes(q) || desc.includes(q);
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+
+        noResults.style.display = visible ? 'none' : '';
+
+        // Update ?q= in URL without reloading
+        const usp = new URLSearchParams(window.location.search);
+        if (q) usp.set('q', q); else usp.delete('q');
+        const newUrl = window.location.pathname + (usp.toString() ? `?${usp}` : '');
+        window.history.replaceState(null, '', newUrl);
+      }
+
+      // Debounce typing
+      let t;
+      input.addEventListener('input', () => {
+        clearTimeout(t);
+        t = setTimeout(() => applyFilter(input.value), 120);
+      });
+
+      // Enter to open first visible card
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const first = cards.find(c => c.style.display !== 'none');
+          if (first) {
+            const a = first.querySelector('a[href]');
+            if (a) a.click();
+          }
+        }
+      });
+
+      // Handy shortcut: press "/" to focus the search
+      document.addEventListener('keydown', e => {
+        const tag = (e.target && e.target.tagName) || '';
+        if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+          e.preventDefault();
+          input.focus();
+        }
+      });
+
+      // Run once on load
+      applyFilter(input.value);
+    })();
+  </script>
+
+  <script>
+    const modal = document.getElementById('loginModal');
+    const btn = document.getElementById('loginBtn');
+    const closeBtn = document.getElementsByClassName('close')[0];
+    btn.onclick = () => { modal.style.display = "block"; modal.setAttribute('aria-hidden','false'); };
+    closeBtn.onclick = () => { modal.style.display = "none"; modal.setAttribute('aria-hidden','true'); };
+    window.onclick = (e) => { if (e.target == modal) { modal.style.display = "none"; modal.setAttribute('aria-hidden','true'); } };
+  </script>
 </body>
 </html>
