@@ -1,20 +1,22 @@
-// server.js (env-enabled)
+// server.js (env-enabled, better-sqlite3)
 console.log("✅ Running MERGED server.js");
 
-require('dotenv').config(); // ← loads .env first
+require('dotenv').config(); // load .env
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+// --- switch from sqlite3 to better-sqlite3 ---
+const Database = require('better-sqlite3');
+
 const app = express();
 
-// ----- ENV FALLBACKS -----
+// ----- ENV -----
 const PORT = process.env.PORT || 3000;
 const DB_FILE = process.env.DB_FILE || path.join(__dirname, 'data.db');
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'public', 'uploads');
@@ -22,7 +24,7 @@ if (!process.env.SESSION_SECRET) {
   console.error("❌ SESSION_SECRET missing! Add it to .env");
   process.exit(1);
 }
-const SESSION_SECRET = process.env.SESSION_SECRET; 
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // ----- EXPRESS BASE -----
 app.set('view engine', 'ejs');
@@ -32,7 +34,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Also serve uploads even if they’re outside /public
-// (This maps the physical UPLOADS_DIR to /uploads in URLs)
 app.use('/uploads', express.static(UPLOADS_DIR));
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -50,10 +51,47 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ----- DB -----
-const db = new sqlite3.Database(DB_FILE);
+// ----- DB (better-sqlite3 + shim) -----
+const _db = new Database(DB_FILE); // synchronous open/create
 console.log('📁 Using database at:', path.resolve(DB_FILE));
 
+// shim mimicking sqlite3 callback API you already used
+const db = {
+  serialize(fn) { try { fn(); } catch (e) { console.error(e); } },
+  run(sql, params, cb) {
+    try {
+      if (typeof params === 'function') { cb = params; params = []; }
+      const info = _db.prepare(sql).run(params || []);
+      cb && cb(null);
+      return info;
+    } catch (err) {
+      cb && cb(err);
+    }
+  },
+  get(sql, params, cb) {
+    try {
+      if (typeof params === 'function') { cb = params; params = []; }
+      const row = _db.prepare(sql).get(params || []);
+      cb && cb(null, row);
+      return row;
+    } catch (err) {
+      cb && cb(err);
+    }
+  },
+  all(sql, params, cb) {
+    try {
+      if (typeof params === 'function') { cb = params; params = []; }
+      const rows = _db.prepare(sql).all(params || []);
+      cb && cb(null, rows);
+      return rows;
+    } catch (err) {
+      cb && cb(err);
+    }
+  },
+  prepare(sql) { return _db.prepare(sql); }
+};
+
+// ----- SCHEMA / MIGRATIONS -----
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS admins (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,10 +139,8 @@ db.get('SELECT COUNT(*) as cnt FROM games', (err, row) => {
     ];
     const stmt = db.prepare('INSERT INTO games (title, short_desc, image) VALUES (?, ?, ?)');
     seedGames.forEach(g => stmt.run(g.title, g.short_desc, g.image));
-    stmt.finalize(err2 => {
-      if (err2) console.error('Seed insert error:', err2);
-      else console.log('✅ Seeded demo games.');
-    });
+    try { stmt.finalize && stmt.finalize(); } catch {}
+    console.log('✅ Seeded demo games.');
   } else {
     console.log('Seed: games table already has data. Count =', row ? row.cnt : 'unknown');
   }
