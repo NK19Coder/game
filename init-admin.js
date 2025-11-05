@@ -1,7 +1,7 @@
 // run: node init-admin.js
 require('dotenv').config();
 const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const readline = require('readline');
 
 const DB_FILE = process.env.DB_FILE || './data.db';
@@ -9,7 +9,7 @@ const ENV_USER = process.env.ADMIN_USER;
 const ENV_PASS = process.env.ADMIN_PASS;
 
 const db = new sqlite3.Database(DB_FILE);
-
+git add package.json package-lock.json server.js init-admin.js
 function ensureTable(cb) {
   db.run(
     `CREATE TABLE IF NOT EXISTS admins (
