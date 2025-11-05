@@ -288,8 +288,8 @@
 
 // server.js (env-enabled, better-sqlite3 + Cloudinary)
 
-
-console.log("✅ Running MERGED server.js"); 
+// server.js (env-enabled, better-sqlite3 + Cloudinary + robust DB path)
+console.log("✅ Running MERGED server.js");
 
 require('dotenv').config();
 
@@ -305,17 +305,19 @@ const multer = require('multer');
 
 const app = express();
 
-// ----- ENV -----
+/* =========================
+   ENV & CONFIG
+   ========================= */
 const PORT = process.env.PORT || 3000;
-const DB_FILE = process.env.DB_FILE || path.join(__dirname, 'data.db');
+const RAW_DB_FILE = process.env.DB_FILE || path.join(__dirname, 'data.db');
 
 if (!process.env.SESSION_SECRET) {
-  console.error("❌ SESSION_SECRET missing! Add it to .env");
+  console.error("❌ SESSION_SECRET missing! Add it to environment variables.");
   process.exit(1);
 }
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
-// Cloudinary config (works with CLOUDINARY_URL or 3 vars)
+// Cloudinary config (either CLOUDINARY_URL or 3 vars)
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || undefined,
   api_key: process.env.CLOUDINARY_API_KEY || undefined,
@@ -323,10 +325,12 @@ cloudinary.config({
   secure: true
 });
 
-// Multer: in-memory (we stream directly to Cloudinary)
+// Multer: in-memory; we stream buffers directly to Cloudinary
 const upload = multer({ storage: multer.memoryStorage() });
 
-// ----- EXPRESS BASE -----
+/* =========================
+   EXPRESS BASE
+   ========================= */
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -337,9 +341,31 @@ app.use(session({
   saveUninitialized: false
 }));
 
-// ----- DB (better-sqlite3 + shim) -----
-const _db = new Database(DB_FILE); // open/create
-console.log('📁 Using database at:', path.resolve(DB_FILE));
+/* =========================
+   DB PATH RESOLVER
+   - Ensures parent dir exists & writable
+   - Falls back to /tmp/data.db when needed
+   ========================= */
+function resolveDbPath(p) {
+  const abs = path.isAbsolute(p) ? p : path.join(__dirname, p);
+  const dir = path.dirname(abs);
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.accessSync(dir, fs.constants.W_OK);
+    return abs;
+  } catch (e) {
+    const fallback = '/tmp/data.db';
+    console.warn(`⚠️ Cannot use DB_FILE="${abs}" (${e.message}). Falling back to ${fallback}`);
+    return fallback;
+  }
+}
+const DB_PATH = resolveDbPath(RAW_DB_FILE);
+
+/* =========================
+   DB (better-sqlite3 + tiny shim)
+   ========================= */
+const _db = new Database(DB_PATH);
+console.log('📁 Using database at:', DB_PATH);
 
 const db = {
   serialize(fn) { try { fn(); } catch (e) { console.error(e); } },
@@ -370,7 +396,9 @@ const db = {
   prepare(sql) { return _db.prepare(sql); }
 };
 
-// ----- SCHEMA / MIGRATIONS -----
+/* =========================
+   SCHEMA / MIGRATIONS
+   ========================= */
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS admins (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -387,6 +415,7 @@ db.serialize(() => {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 
+  // Ensure game_link exists on older DBs
   db.all(`PRAGMA table_info(games)`, (err, rows) => {
     if (err) return console.error('PRAGMA error:', err);
     const hasGameLink = Array.isArray(rows) && rows.some(c => c.name === 'game_link');
@@ -399,7 +428,7 @@ db.serialize(() => {
   });
 });
 
-// Seed demo games once
+// Seed demo games once (no links)
 db.get('SELECT COUNT(*) as cnt FROM games', (err, row) => {
   if (err) { console.error('Seed check error:', err); return; }
   if (row && row.cnt === 0) {
@@ -424,7 +453,9 @@ db.get('SELECT COUNT(*) as cnt FROM games', (err, row) => {
   }
 });
 
-// ----- HELPERS -----
+/* =========================
+   HELPERS
+   ========================= */
 function requireAdmin(req, res, next) {
   if (req.session && req.session.adminId) return next();
   res.redirect('/admin/login');
@@ -453,7 +484,10 @@ function uploadBufferToCloudinary(fileBuffer, filename, folder = 'gamezone') {
   });
 }
 
-// ----- ROUTES -----
+/* =========================
+   ROUTES
+   ========================= */
+
 // Public home
 app.get('/', (req, res) => {
   db.all('SELECT * FROM games ORDER BY created_at DESC', (err, rows) => {
@@ -494,6 +528,7 @@ app.post('/admin/login', (req, res) => {
     res.redirect('/admin');
   });
 });
+
 app.get('/admin/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/'));
 });
@@ -506,7 +541,7 @@ app.get('/admin', requireAdmin, (req, res) => {
   });
 });
 
-// Add game (Cloudinary)
+// Add game (Cloudinary upload or image URL)
 app.post('/admin/games/add', requireAdmin, upload.single('imagefile'), async (req, res) => {
   try {
     const { title, short_desc, imageurl, gamelink } = req.body;
@@ -536,7 +571,7 @@ app.post('/admin/games/add', requireAdmin, upload.single('imagefile'), async (re
   }
 });
 
-// Edit game (Cloudinary)
+// Edit game (Cloudinary upload or image URL)
 app.post('/admin/games/edit/:id', requireAdmin, upload.single('imagefile'), async (req, res) => {
   const id = req.params.id;
   const { title, short_desc, imageurl, gamelink } = req.body;
@@ -580,8 +615,10 @@ app.post('/admin/games/delete/:id', requireAdmin, (req, res) => {
     res.redirect('/admin');
   });
 });
-
+ 
+/* =========================
+   START
+   ========================= */
 app.listen(PORT, () => {
   console.log(`✅ Server started on http://localhost:${PORT}`);
 });
-
