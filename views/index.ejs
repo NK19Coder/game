@@ -158,9 +158,9 @@
       <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off" />
     </div>
     <div class="auth-links">
-      <a href="/login">Login</a>
+      <a href="/login">Login</a>    
       <a href="/signup" class="signup">Sign up</a>
-    </div>
+    </div> 
   </header>
 
   <div class="categories">
@@ -235,7 +235,7 @@
           card.style.display = match ? '' : 'none';
           if (match) visible++;
         });
-
+ 
         noResults.style.display = visible ? 'none' : '';
 
         // Update ?q= in URL without reloading
@@ -287,4 +287,4 @@
     window.onclick = (e) => { if (e.target == modal) { modal.style.display = "none"; modal.setAttribute('aria-hidden','true'); } };
   </script>
 </body>
-</html>
+</html> 

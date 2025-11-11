@@ -336,78 +336,33 @@
   <title>Admin Dashboard | GameZone</title>
   <link rel="icon" type="image/png" href="/favicon.png" />
   <style>
-    body {
-      background: #0d0d0f;
-      color: #fff;
-      font-family: "Poppins", sans-serif;
-      margin: 0;
-    }
-    .topbar {
-      background: #141416;
-      padding: 14px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #202022;
-      flex-wrap: wrap;
-    }
-    .logo { font-size: 22px; font-weight: 700; color: #fff; text-decoration: none; }
-    .logo span { color: #ff4747; }
-    nav { display: flex; flex-wrap: wrap; gap: 10px; }
-    nav a {
-      text-decoration: none; color: #fff; background: #ff4747;
-      padding: 8px 14px; border-radius: 8px; transition: 0.3s; font-size: 14px;
-    }
-    nav a:hover { background: #ff5d5d; transform: scale(1.05); }
-    .container { padding: 30px; max-width: 1100px; margin: auto; }
-    .admin-grid { display: flex; gap: 24px; flex-wrap: wrap; }
-    .panel {
-      background: #18181b; border-radius: 12px; padding: 20px;
-      flex: 1 1 48%; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); min-width: 320px;
-    }
-    h2, h3 { margin-top: 0; }
-    form { display: flex; flex-direction: column; }
-    input, textarea {
-      width: 100%; background: #202024; border: 1px solid #2a2a2f; border-radius: 8px;
-      padding: 10px; color: white; margin-bottom: 12px; font-size: 14px; outline: none;
-    }
-    input:focus, textarea:focus { border-color: #ff4747; }
-    button.btn {
-      background: #ff4747; border: none; color: white; padding: 10px 14px;
-      border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 600;
-    }
-    button.btn:hover { background: #ff5d5d; transform: scale(1.05); }
-    .list-item {
-      background: #202024; border-radius: 10px; padding: 12px; margin-bottom: 12px;
-      display: flex; align-items: center; gap: 14px; transition: all 0.3s ease;
-    }
-    .list-item:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(255, 71, 71, 0.1); }
-    .list-item img { width: 100px; height: 70px; border-radius: 8px; object-fit: cover; }
-    .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
-    .actions button {
-      background: #333; border: none; color: #ff4747; border-radius: 6px;
-      padding: 6px 10px; cursor: pointer; transition: 0.3s; font-size: 13px;
-    }
-    .actions button:hover { background: #ff4747; color: #fff; }
-
-    /* Modal */
-    .modal {
-      display: none; position: fixed; z-index: 999; left: 0; top: 0;
-      width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8);
-      justify-content: center; align-items: center;
-    }
-    .modal-content {
-      background: #18181b; padding: 25px; border-radius: 12px;
-      width: 90%; max-width: 400px; box-shadow: 0 0 15px rgba(255, 71, 71, 0.3);
-      position: relative;
-    }
-    .close { position: absolute; top: 10px; right: 15px; color: #ff4747; font-size: 22px; cursor: pointer; }
-
-    @media (max-width: 768px) {
-      .admin-grid { flex-direction: column; }
-      .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
-      nav a { padding: 6px 10px; font-size: 13px; }
-    }
+    body { background:#0d0d0f; color:#fff; font-family:"Poppins",sans-serif; margin:0; }
+    .topbar { background:#141416; padding:14px 30px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #202022; flex-wrap:wrap; }
+    .logo { font-size:22px; font-weight:700; color:#fff; text-decoration:none; }
+    .logo span { color:#ff4747; }
+    nav { display:flex; flex-wrap:wrap; gap:10px; }
+    nav a { text-decoration:none; color:#fff; background:#ff4747; padding:8px 14px; border-radius:8px; transition:.3s; font-size:14px; }
+    nav a:hover { background:#ff5d5d; transform:scale(1.05); }
+    .container { padding:30px; max-width:1100px; margin:auto; }
+    .admin-grid { display:flex; gap:24px; flex-wrap:wrap; }
+    .panel { background:#18181b; border-radius:12px; padding:20px; flex:1 1 48%; box-shadow:0 8px 25px rgba(0,0,0,.3); min-width:320px; }
+    h2,h3 { margin-top:0; }
+    form { display:flex; flex-direction:column; }
+    input,textarea { width:100%; background:#202024; border:1px solid #2a2a2f; border-radius:8px; padding:10px; color:#fff; margin-bottom:12px; font-size:14px; outline:none; }
+    input:focus,textarea:focus { border-color:#ff4747; }
+    button.btn { background:#ff4747; border:none; color:#fff; padding:10px 14px; border-radius:8px; cursor:pointer; transition:.3s; font-weight:600; }
+    button.btn:hover { background:#ff5d5d; transform:scale(1.05); }
+    .list-item { background:#202024; border-radius:10px; padding:12px; margin-bottom:12px; display:flex; align-items:center; gap:14px; transition:all .3s ease; }
+    .list-item:hover { transform:translateY(-3px); box-shadow:0 4px 15px rgba(255,71,71,.1); }
+    .list-item img { width:100px; height:70px; border-radius:8px; object-fit:cover; }
+    .actions { margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+    .actions button { background:#333; border:none; color:#ff4747; border-radius:6px; padding:6px 10px; cursor:pointer; transition:.3s; font-size:13px; }
+    .actions button:hover { background:#ff4747; color:#fff; }
+    .hint { font-size:12px; color:#bbb; margin:-6px 0 10px 0; }
+    .modal { display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,.8); justify-content:center; align-items:center; }
+    .modal-content { background:#18181b; padding:25px; border-radius:12px; width:90%; max-width:400px; box-shadow:0 0 15px rgba(255,71,71,.3); position:relative; }
+    .close { position:absolute; top:10px; right:15px; color:#ff4747; font-size:22px; cursor:pointer; }
+    @media (max-width:768px){ .admin-grid{flex-direction:column;} .topbar{flex-direction:column; align-items:flex-start; gap:10px;} nav a{padding:6px 10px; font-size:13px;} }
   </style>
 </head>
 <body>
@@ -429,10 +384,15 @@
           <input type="text" name="title" placeholder="Game Title" required />
           <textarea name="short_desc" placeholder="Short Description"></textarea>
 
-          <input type="url" name="gamelink" placeholder="Game Link (https://...)" required />
+          <input type="url" name="gamelink" placeholder="External Game Link (https://...)" />
+          <div class="hint">OR upload a ZIP of your HTML game below. We will host it under /games and link it automatically.</div>
 
+          <label class="hint">Game ZIP (contains index.html)</label>
+          <input type="file" name="gamefile" accept=".zip" />
+
+          <label class="hint">Cover Image</label>
           <input type="text" name="imageurl" placeholder="Image URL (optional)" />
-          <p>or Upload Image:</p>
+          <div class="hint">Or upload an image file (uses Cloudinary if configured; otherwise saved locally).</div>
           <input type="file" name="imagefile" accept="image/*" />
 
           <button class="btn" type="submit">Add Game</button>
@@ -458,7 +418,6 @@
 
               <div class="actions">
                 <% if (game.game_link) { %>
-                  <!-- Use redirect route so tracking/logic stays centralized -->
                   <a href="/play/<%= game.id %>" target="_blank" rel="noopener noreferrer"
                      style="text-decoration:none;padding:6px 10px;background:#2a2a2f;border-radius:6px;color:#fff;">▶️ Play</a>
                 <% } %>
@@ -491,11 +450,15 @@
         <input type="text" id="editTitle" name="title" placeholder="Game Title" required />
         <textarea id="editDesc" name="short_desc" placeholder="Short Description"></textarea>
 
-        <input type="url" id="editGameLink" name="gamelink" placeholder="Game Link (https://...)" />
+        <input type="url" id="editGameLink" name="gamelink" placeholder="External Game Link (https://...)" />
+        <div class="hint">OR upload a new ZIP to replace the hosted game.</div>
+        <input type="file" name="gamefile" accept=".zip" />
 
+        <label class="hint" style="margin-top:6px;">Cover Image</label>
         <input type="text" id="editImageURL" name="imageurl" placeholder="Image URL (optional)" />
         <p>or Upload New Image:</p>
         <input type="file" name="imagefile" accept="image/*" />
+
         <button class="btn" type="submit">Save Changes</button>
       </form>
     </div>
@@ -503,9 +466,9 @@
 
   <script>
     function openEditModalFromButton(btn) {
-      const id = btn.dataset.id;
+      const id    = btn.dataset.id;
       const title = decodeURIComponent(btn.dataset.title || '');
-      const desc = decodeURIComponent(btn.dataset.desc || '');
+      const desc  = decodeURIComponent(btn.dataset.desc || '');
       const image = decodeURIComponent(btn.dataset.image || '');
       const link  = decodeURIComponent(btn.dataset.link || '');
 
@@ -533,3 +496,4 @@
   </script>
 </body>
 </html>
+

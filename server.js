@@ -289,8 +289,8 @@
 // server.js (env-enabled, better-sqlite3 + Cloudinary)
 
 // server.js (env-enabled, better-sqlite3 + Cloudinary + robust DB path)
+// server.js (local-friendly: ZIP game uploads + optional Cloudinary for images)
 console.log("✅ Running MERGED server.js");
-
 require('dotenv').config();
 
 const express = require('express');
@@ -302,11 +302,13 @@ const fs = require('fs');
 const Database = require('better-sqlite3');
 const cloudinary = require('cloudinary').v2;
 const multer = require('multer');
+const AdmZip = require('adm-zip');
+const slugify = require('slugify');
 
 const app = express();
 
 /* =========================
-   ENV & CONFIG
+   ENV & PATHS
    ========================= */
 const PORT = process.env.PORT || 3000;
 const RAW_DB_FILE = process.env.DB_FILE || path.join(__dirname, 'data.db');
@@ -317,23 +319,40 @@ if (!process.env.SESSION_SECRET) {
 }
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
-// Cloudinary config (either CLOUDINARY_URL or 3 vars)
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || undefined,
-  api_key: process.env.CLOUDINARY_API_KEY || undefined,
-  api_secret: process.env.CLOUDINARY_API_SECRET || undefined,
-  secure: true
+// Optional Cloudinary (only used if creds exist)
+const hasCloudinary =
+  !!process.env.CLOUDINARY_CLOUD_NAME &&
+  !!process.env.CLOUDINARY_API_KEY &&
+  !!process.env.CLOUDINARY_API_SECRET;
+
+if (hasCloudinary) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true
+  });
+}
+
+// Local folders (for images/games when not using external storage)
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'public', 'uploads');
+const GAMES_DIR   = process.env.GAMES_DIR   || path.join(__dirname, 'public', 'games');
+
+// Ensure folders exist
+[UPLOADS_DIR, GAMES_DIR, path.join(__dirname, 'public')].forEach(dir => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-// Multer: in-memory; we stream buffers directly to Cloudinary
-const upload = multer({ storage: multer.memoryStorage() });
+// Serve static
+app.use('/uploads', express.static(UPLOADS_DIR));
+app.use('/games',   express.static(GAMES_DIR));
+app.use(express.static(path.join(__dirname, 'public')));
 
 /* =========================
    EXPRESS BASE
    ========================= */
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   secret: SESSION_SECRET,
@@ -342,9 +361,13 @@ app.use(session({
 }));
 
 /* =========================
+   Multer (in-memory)
+   - fields: imagefile (image), gamefile (zip)
+   ========================= */
+const upload = multer({ storage: multer.memoryStorage() });
+
+/* =========================
    DB PATH RESOLVER
-   - Ensures parent dir exists & writable
-   - Falls back to /tmp/data.db when needed
    ========================= */
 function resolveDbPath(p) {
   const abs = path.isAbsolute(p) ? p : path.join(__dirname, p);
@@ -354,7 +377,7 @@ function resolveDbPath(p) {
     fs.accessSync(dir, fs.constants.W_OK);
     return abs;
   } catch (e) {
-    const fallback = '/tmp/data.db';
+    const fallback = path.join(__dirname, 'data.db'); // local fallback
     console.warn(`⚠️ Cannot use DB_FILE="${abs}" (${e.message}). Falling back to ${fallback}`);
     return fallback;
   }
@@ -415,7 +438,7 @@ db.serialize(() => {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 
-  // Ensure game_link exists on older DBs
+  // Ensure game_link exists (for old DBs)
   db.all(`PRAGMA table_info(games)`, (err, rows) => {
     if (err) return console.error('PRAGMA error:', err);
     const hasGameLink = Array.isArray(rows) && rows.some(c => c.name === 'game_link');
@@ -428,28 +451,19 @@ db.serialize(() => {
   });
 });
 
-// Seed demo games once (no links)
+// Seed demo (no links)
 db.get('SELECT COUNT(*) as cnt FROM games', (err, row) => {
   if (err) { console.error('Seed check error:', err); return; }
   if (row && row.cnt === 0) {
     const seedGames = [
       { title: 'Neon Runner', short_desc: 'A fast-paced endless runner with neon visuals and powerups.', image: '/placeholder.png' },
-      { title: 'Speed Rally', short_desc: 'Arcade-style top-down racing with tight turns and boosts.', image: '/placeholder.png' },
-      { title: 'Mystic Blocks', short_desc: 'Match & clear colorful blocks to solve relaxing puzzles.', image: '/placeholder.png' },
-      { title: 'Alien Shooter', short_desc: 'Defend your ship against waves of alien invaders.', image: '/placeholder.png' },
-      { title: 'Castle Escape', short_desc: 'Platformer adventure — jump, climb and escape the castle.', image: '/placeholder.png' },
-      { title: 'Soccer Heroes', short_desc: 'Quick arcade soccer matches with simple controls.', image: '/placeholder.png' },
-      { title: 'Farm Bloom', short_desc: 'Manage your crops and expand the cozy farm.', image: '/placeholder.png' },
-      { title: 'Brick Smash', short_desc: 'Modern brick breaker with physics and powerups.', image: '/placeholder.png' },
-      { title: 'Zen Garden', short_desc: 'Relaxing mini-games to unwind and enjoy.', image: '/placeholder.png' },
-      { title: 'Sky Jump', short_desc: 'Precision platformer with short levels and big rewards.', image: '/placeholder.png' }
+      { title: 'Speed Rally', short_desc: 'Arcade racing with tight turns and boosts.', image: '/placeholder.png' },
+      { title: 'Mystic Blocks', short_desc: 'Match & clear colorful blocks to relax.', image: '/placeholder.png' },
     ];
     const stmt = db.prepare('INSERT INTO games (title, short_desc, image) VALUES (?, ?, ?)');
     seedGames.forEach(g => stmt.run(g.title, g.short_desc, g.image));
     try { stmt.finalize && stmt.finalize(); } catch {}
     console.log('✅ Seeded demo games.');
-  } else {
-    console.log('Seed: games table already has data. Count =', row ? row.cnt : 'unknown');
   }
 });
 
@@ -467,21 +481,63 @@ function normalizeUrl(u) {
   if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
   return u;
 }
-function uploadBufferToCloudinary(fileBuffer, filename, folder = 'gamezone') {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        filename_override: filename,
-        resource_type: 'image',
-        use_filename: true,
-        unique_filename: true,
-        overwrite: false
-      },
-      (err, result) => err ? reject(err) : resolve(result)
-    );
-    stream.end(fileBuffer);
-  });
+function uploadImageBuffer(buffer, originalName) {
+  // Prefer Cloudinary if configured
+  if (hasCloudinary) {
+    return new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'gamezone',
+          filename_override: originalName || `image-${Date.now()}`,
+          resource_type: 'image',
+          use_filename: true,
+          unique_filename: true,
+          overwrite: false
+        },
+        (err, result) => err ? reject(err) : resolve(result.secure_url)
+      );
+      stream.end(buffer);
+    });
+  }
+  // Fallback: local save
+  const base = `${Date.now()}-${(originalName || 'image').replace(/\s+/g, '_')}`;
+  const fname = path.join(UPLOADS_DIR, base);
+  fs.writeFileSync(fname, buffer);
+  return Promise.resolve(`/uploads/${path.basename(fname)}`);
+}
+
+function extractZipToGames(buffer, folderName) {
+  const safeFolder = slugify(folderName || `game-${Date.now()}`, { lower: true, strict: true });
+  const destRoot   = path.join(GAMES_DIR, `${safeFolder}-${Date.now()}`);
+  fs.mkdirSync(destRoot, { recursive: true });
+
+  const zip = new AdmZip(buffer);
+  zip.extractAllTo(destRoot, true);
+
+  // Try to locate an index.html inside extracted content
+  const indexRel = findIndexHtmlRelative(destRoot);
+  if (!indexRel) {
+    return { link: null, folder: destRoot };
+  }
+  // We serve /games relative to GAMES_DIR
+  const relFromGames = path.relative(GAMES_DIR, path.join(destRoot, indexRel)).split(path.sep).join('/');
+  return { link: `/games/${relFromGames}`, folder: destRoot };
+}
+
+function findIndexHtmlRelative(rootDir) {
+  const stack = [rootDir];
+  while (stack.length) {
+    const dir = stack.pop();
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const e of entries) {
+      const p = path.join(dir, e.name);
+      if (e.isFile() && /^index\.html?$/i.test(e.name)) {
+        return path.relative(rootDir, p);
+      }
+      if (e.isDirectory()) stack.push(p);
+    }
+  }
+  return null;
 }
 
 /* =========================
@@ -496,7 +552,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Public: Play redirect
+// Redirect to game link (external or local /games/…/index.html)
 app.get('/play/:id', (req, res) => {
   db.get('SELECT game_link FROM games WHERE id = ?', [req.params.id], (err, row) => {
     if (err || !row || !row.game_link) return res.status(404).send('Game link not found');
@@ -504,7 +560,7 @@ app.get('/play/:id', (req, res) => {
   });
 });
 
-// Optional debug
+// Debug helper
 app.get('/debug/:id', (req, res) => {
   db.get('SELECT id, title, game_link FROM games WHERE id = ?', [req.params.id], (err, row) => {
     if (err) return res.status(500).send('DB error: ' + err.message);
@@ -512,7 +568,7 @@ app.get('/debug/:id', (req, res) => {
   });
 });
 
-// Admin login pages
+// Admin login
 app.get('/admin/login', (req, res) => {
   res.render('admin_login', { error: null });
 });
@@ -528,7 +584,6 @@ app.post('/admin/login', (req, res) => {
     res.redirect('/admin');
   });
 });
-
 app.get('/admin/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/'));
 });
@@ -541,81 +596,99 @@ app.get('/admin', requireAdmin, (req, res) => {
   });
 });
 
-// Add game (Cloudinary upload or image URL)
-app.post('/admin/games/add', requireAdmin, upload.single('imagefile'), async (req, res) => {
-  try {
-    const { title, short_desc, imageurl, gamelink } = req.body;
-
-    let imagePath = imageurl && imageurl.trim() ? imageurl.trim() : null;
-
-    if (req.file && req.file.buffer) {
-      const up = await uploadBufferToCloudinary(
-        req.file.buffer,
-        req.file.originalname || `game-${Date.now()}`,
-        'gamezone'
-      );
-      imagePath = up.secure_url;
-    }
-    if (!imagePath) imagePath = '/placeholder.png';
-
-    const game_link = normalizeUrl(gamelink);
-
-    db.run(
-      'INSERT INTO games (title, short_desc, image, game_link) VALUES (?, ?, ?, ?)',
-      [title, short_desc, imagePath, game_link],
-      err => err ? res.status(500).send('DB error') : res.redirect('/admin')
-    );
-  } catch (e) {
-    console.error('Upload error:', e);
-    res.status(500).send('Upload error');
-  }
-});
-
-// Edit game (Cloudinary upload or image URL)
-app.post('/admin/games/edit/:id', requireAdmin, upload.single('imagefile'), async (req, res) => {
-  const id = req.params.id;
-  const { title, short_desc, imageurl, gamelink } = req.body;
-
-  db.get('SELECT image FROM games WHERE id = ?', [id], async (err, row) => {
-    if (err) return res.status(500).send('DB error');
-    if (!row) return res.status(404).send('Game not found');
-
+/*  Add Game
+    - imagefile: optional image (Cloudinary or local)
+    - imageurl:  optional image URL
+    - gamelink:  optional external URL
+    - gamefile:  optional ZIP of HTML game (served under /games)
+*/
+app.post('/admin/games/add',
+  requireAdmin,
+  upload.fields([{ name: 'imagefile', maxCount: 1 }, { name: 'gamefile', maxCount: 1 }]),
+  async (req, res) => {
     try {
-      let newImage = row.image;
+      const { title, short_desc, imageurl, gamelink } = req.body;
 
-      if (req.file && req.file.buffer) {
-        const up = await uploadBufferToCloudinary(
-          req.file.buffer,
-          req.file.originalname || `game-${Date.now()}`,
-          'gamezone'
-        );
-        newImage = up.secure_url;
-      } else if (imageurl && imageurl.trim() !== '') {
-        newImage = imageurl.trim();
+      // image
+      let imagePath = imageurl && imageurl.trim() ? imageurl.trim() : null;
+      if (!imagePath && req.files && req.files.imagefile && req.files.imagefile[0]) {
+        imagePath = await uploadImageBuffer(req.files.imagefile[0].buffer, req.files.imagefile[0].originalname);
+      }
+      if (!imagePath) imagePath = '/placeholder.png';
+
+      // game link: prefer ZIP upload -> local hosted, else external link
+      let finalLink = '';
+      if (req.files && req.files.gamefile && req.files.gamefile[0]) {
+        const { link } = extractZipToGames(req.files.gamefile[0].buffer, title);
+        if (link) finalLink = link;
+      }
+      if (!finalLink && gamelink && gamelink.trim()) {
+        finalLink = normalizeUrl(gamelink);
       }
 
-      const gameLink = normalizeUrl(gamelink);
       db.run(
-        'UPDATE games SET title = ?, short_desc = ?, image = ?, game_link = ? WHERE id = ?',
-        [title, short_desc, newImage, gameLink, id],
-        (updateErr) => updateErr ? res.status(500).send('DB error') : res.redirect('/admin')
+        'INSERT INTO games (title, short_desc, image, game_link) VALUES (?, ?, ?, ?)',
+        [title, short_desc, imagePath, finalLink],
+        err => err ? res.status(500).send('DB error') : res.redirect('/admin')
       );
     } catch (e) {
-      console.error('Upload error:', e);
-      res.status(500).send('Upload error');
+      console.error('Add game error:', e);
+      res.status(500).send('Add game error');
     }
-  });
-});
+  }
+);
 
-// Delete game
+// Edit Game (same rules as add; new ZIP replaces link; new image replaces image)
+app.post('/admin/games/edit/:id',
+  requireAdmin,
+  upload.fields([{ name: 'imagefile', maxCount: 1 }, { name: 'gamefile', maxCount: 1 }]),
+  async (req, res) => {
+    const id = req.params.id;
+    const { title, short_desc, imageurl, gamelink } = req.body;
+
+    db.get('SELECT * FROM games WHERE id = ?', [id], async (err, row) => {
+      if (err) return res.status(500).send('DB error');
+      if (!row) return res.status(404).send('Game not found');
+
+      try {
+        // image
+        let newImage = row.image || '/placeholder.png';
+        if (req.files && req.files.imagefile && req.files.imagefile[0]) {
+          newImage = await uploadImageBuffer(req.files.imagefile[0].buffer, req.files.imagefile[0].originalname);
+        } else if (imageurl && imageurl.trim() !== '') {
+          newImage = imageurl.trim();
+        }
+
+        // link
+        let newLink = row.game_link || '';
+        if (req.files && req.files.gamefile && req.files.gamefile[0]) {
+          const { link } = extractZipToGames(req.files.gamefile[0].buffer, title || row.title);
+          if (link) newLink = link;
+        } else if (gamelink && gamelink.trim() !== '') {
+          newLink = normalizeUrl(gamelink);
+        }
+
+        db.run(
+          'UPDATE games SET title = ?, short_desc = ?, image = ?, game_link = ? WHERE id = ?',
+          [title, short_desc, newImage, newLink, id],
+          (updateErr) => updateErr ? res.status(500).send('DB error') : res.redirect('/admin')
+        );
+      } catch (e) {
+        console.error('Edit game error:', e);
+        res.status(500).send('Edit game error');
+      }
+    });
+  }
+);
+
+// Delete Game (does not delete extracted game folder to keep it simple)
 app.post('/admin/games/delete/:id', requireAdmin, (req, res) => {
-  const id = req.params.id;
-  db.run('DELETE FROM games WHERE id = ?', [id], (err2) => {
+  db.run('DELETE FROM games WHERE id = ?', [req.params.id], (err2) => {
     if (err2) return res.status(500).send('DB error');
     res.redirect('/admin');
   });
 });
- 
+
 /* =========================
    START
    ========================= */
