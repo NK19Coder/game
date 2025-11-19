@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — VillasGame</title>
+  <style>
+    /* ---------- INLINE HEADER / FOOTER STYLES ---------- */
+    :root { --bg:#0f0f12; --muted:#9aa0a6; --card:#111; --accent:#ff6a00; --text:#e6e6e6; }
+    body { margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial; background: #fff; color: #111; line-height:1.5; }
+    .navbar { display:flex; align-items:center; gap:20px; padding:14px 20px; background:#121212; color:#fff; }
+    .logo { font-weight:700; font-size:18px; }
+    .nav-links { display:flex; gap:12px; margin-left:10px; }
+    .nav-links a { color:#ddd; text-decoration:none; font-size:14px; }
+    .search-bar { margin-left:auto; }
+    .search-bar input { padding:8px 10px; border-radius:6px; border:1px solid #333; background:#111; color:#fff; width:220px; }
+    .auth-links { margin-left:12px; display:flex; gap:8px; }
+    .auth-links a { color:#fff; text-decoration:none; padding:8px 10px; border-radius:6px; font-size:14px; background:transparent; border:1px solid #333; }
+    .auth-links .signup { background:#ff6a00; color:#fff; border-color:transparent; }
+
+    /* page content */
+    .container { max-width:1000px; margin:36px auto; padding:0 18px; }
+    h1 { margin:0 0 12px; font-size:28px; }
+    .lead { color:#444; margin-bottom:18px; }
+    section { margin:18px 0; padding:18px; background:#f8f8f8; border-radius:8px; border:1px solid #eee; }
+
+    /* footer */
+    .footer { background:#0f1720; color:#cbd5e1; padding:28px 16px; margin-top:40px; }
+    .footer .footer-inner { max-width:1100px; margin:0 auto; text-align:center; }
+    .footer .brand { font-weight:700; font-size:20px; margin-bottom:8px; color:#fff; }
+    .footer .links { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin:8px 0; }
+    .footer .links a { color:#9aa0a6; text-decoration:none; font-size:14px; }
+    .footer .copy { color:#7f8a93; margin-top:10px; font-size:13px; }
+
+    /* responsive */
+    @media (max-width:600px) {
+      .search-bar input { width:140px; }
+      .nav-links { display:none; }
+      .container { margin:20px auto; padding:0 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header (inline) -->
+  <header class="navbar">
+    <div class="logo">🔥 VillasGame</div>
+    <nav class="nav-links">
+      <a href="/">Newest</a>
+      <a href="/popular">Most popular</a>
+      <a href="/random">Random</a>
+    </nav>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off" />
+    </div>
+    <div class="auth-links">
+      <a href="/login">Login</a>
+      <a href="/signup" class="signup">Sign up</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>About VillasGame</h1>
+    <p class="lead">Welcome to VillasGame.com — your trusted hub for high-quality HTML5 web games crafted for players of all ages.
+
+We bring you a dynamic and ever-expanding library of fun, interactive, and mobile-friendly games that run instantly on any browser — no downloads, no installations, just pure gaming.
+.</p>
+
+    <section>
+      <h2>At VillasGame.com, our mission is simple:</h2>
+      <p>✔ Offer a smooth, fast, and distraction-free gaming experience  <br>
+✔ Provide 100% free-to-play HTML5 games that work on all devices   <br>
+✔ Make online gaming safe, accessible, and enjoyable for everyone   <br>
+✔ Deliver new, curated games every week<br><br>
+Whether you’re here for action, puzzles, racing, shooting, sports, adventure, or relaxing casual games, VillasGame.com is designed to give you endless entertainment with zero hassle.
+</p>
+    </section>
+
+    <section>
+      <h2>🎮 Why Choose VillasGame.com?</h2>
+      <p>⚡ Lightning-Fast Loading --
+        Our games are optimized for instant loading without lag — even on slow networks.
+        <br>
+
+        📱 Play on Any Device --
+        Every game is built with modern HTML5 technology, making it fully responsive on laptop, or desktop.
+        <br>
+        🛡 Safe & Secure  --
+        We prioritize user safety. All games are screened to ensure they run smoothly and contain no harmful scripts.
+        <br>
+        ✨ Zero Downloads Needed --
+        Open your browser and start playing — that’s it. No storage space wasted.
+        <br>
+        🎯 Curated for Quality --
+        We handpick games that are fun, engaging, and easy to play for users of all ages.
+        <br>    
+        🔄 Regular Updates  --
+        New games are added frequently to ensure there’s always something fresh and exciting waiting for you.
+</p>
+    </section>
+
+    <section>
+      <h2>Get in Touch</h2>
+      <p>Have a suggestion, game request, or partnership idea?  
+        We're always open to feedback and collaboration!  
+        Feel free to reach out through our contact page.
+
+Thank you for being a part of the VillasGame community.  
+Enjoy gaming the smart way!.</p>
+    </section>
+  </main>
+
+  <!-- Footer (inline) -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="brand">🔥 VillasGame</div>
+      <div class="links">
+        <a href="/about">About</a>
+        <a href="/terms">Terms &amp; Conditions</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="copy">© <%= new Date().getFullYear() %> ZONTAL. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Small UX: "/" focuses search
+    document.addEventListener('keydown', (e) => {
+      const tag = (e.target && e.target.tagName) || '';
+      if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+      }
+    });
+  </script>
+</body>
+</html>
