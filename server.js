@@ -760,6 +760,16 @@ app.post('/admin/games/edit/:id', requireAdmin, upload.fields([
   });
 });
 
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
+// Terms & Conditions page
+app.get('/terms', (req, res) => {
+  res.render('terms');
+});
+
+
 // Delete game
 app.post('/admin/games/delete/:id', requireAdmin, (req, res) => {
   db.run('DELETE FROM games WHERE id = ?', [req.params.id], (err2) => {
