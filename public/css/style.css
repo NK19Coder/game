@@ -18,8 +18,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 12px 28px;
+  padding: 15px 40px;
   background-color: #141414;
   position: sticky;
   top: 0;
@@ -28,103 +27,68 @@ body {
 
 .logo {
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   color: #ff6200;
   letter-spacing: 1px;
-  white-space: nowrap;
-}
-
-.nav-links {
-  display: flex;
-  gap: 12px;
-  margin-left: 6px;
-  align-items: center;
 }
 
 .nav-links a {
   color: #fff;
-  margin: 0 10px;
+  margin: 0 15px;
   text-decoration: none;
   font-weight: 500;
   transition: 0.3s;
-  white-space: nowrap;
 }
 
 .nav-links a:hover {
   color: #ff6200;
 }
 
-.search-bar {
-  margin-left: auto;
-  display:flex;
-  align-items:center;
-}
-
 .search-bar input {
-  padding: 8px 12px;
+  padding: 8px 15px;
   border-radius: 25px;
   border: none;
   outline: none;
   background: #1e1e1e;
   color: #fff;
-  width: 200px;
-  max-width: 42vw;
-  transition: width .18s ease;
-}
-
-/* keep auth links visible and compact */
-.auth-links {
-  margin-left: 12px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
+  width: 180px;
 }
 
 .auth-links a {
-  margin-left: 6px;
+  margin-left: 15px;
   color: #fff;
   text-decoration: none;
   transition: 0.3s;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 14px;
 }
 
 .auth-links .signup {
   background-color: #ff6200;
-  padding: 7px 12px;
+  padding: 7px 15px;
   border-radius: 20px;
-  font-weight:600;
+}
+
+.auth-links a:hover {
+  opacity: 0.8;
 }
 
 /* Categories */
 .categories {
   display: flex;
-  flex-wrap: nowrap; /* allow horizontal scroll on small screens */
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 12px 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 15px 0;
   background-color: #141414;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
 }
-
-.categories::-webkit-scrollbar { height: 8px; }
-.categories::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 8px; }
 
 .categories button {
   background-color: #1e1e1e;
   color: white;
   border: none;
-  margin: 0;
-  padding: 8px 14px;
+  margin: 5px 10px;
+  padding: 8px 18px;
   border-radius: 20px;
   cursor: pointer;
-  transition: 0.22s;
-  flex: 0 0 auto; /* don't shrink; allow horizontal scrolling */
-  font-size: 14px;
-  white-space: nowrap;
+  transition: 0.3s;
 }
 
 .categories button:hover {
@@ -133,34 +97,27 @@ body {
 
 /* Game grid */
 .game-grid {
-  /* flexible card widths using minmax so it adapts to viewport */
+  --card-w: 180px;            
+  --gap: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 18px;
-  padding: 26px 22px;
-  align-items: start;
+  grid-template-columns: repeat(auto-fit, var(--card-w));
+  gap: var(--gap);
+  padding: 30px 50px;
+  /* justify-content: center; */
 }
 
-/* keep the --card-w var for backwards compatibility of styles */
-:root { --card-w: 180px; --gap: 20px; }
-
 .game-card {
-  width: 100%;
-  max-width: var(--card-w);
-  margin: 0 auto;
+  width: var(--card-w);
   background-color: #1a1a1a;
   border-radius: 15px;
   overflow: hidden;
   transition: 0.3s;
   position: relative; /* for title overlay */
-  display:flex;
-  flex-direction:column;
 }
 
-.game-card a {
-  display:block;
-  color:inherit;
-  text-decoration:none;
+
+.game-card a{
+  display: block;
 }
 
 .game-card img {
@@ -168,12 +125,11 @@ body {
   height: 150px;
   object-fit: cover;
   border-bottom: 1px solid #222;
-  display:block;
 }
 
 .game-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 20px rgba(255, 98, 0, 0.12);
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255, 98, 0, 0.3);
 }
 
 /* Title overlay: hidden by default, revealed on hover or focus */
@@ -201,28 +157,22 @@ body {
   transform: translateY(0);
   pointer-events: auto;
 }
-
-/* Login button */
 .login-btn {
   background: #ff4757;
   color: #fff;
-  padding: 10px 14px;
+  padding: 10px 18px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   position: fixed;
-  top: 18px;
-  right: 18px;
+  top: 15px;
+  right: 15px;
   font-weight: 600;
-  transition: 0.18s;
-  z-index: 1100;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  transition: 0.3s; 
 }
 .login-btn:hover {
   background: #e84118;
 }
-
-/* Modal */
 .modal {
   display: none;
   position: fixed;
@@ -266,8 +216,8 @@ body {
 .footer {
   background: #111;
   color: #ddd;
-  padding: 32px 16px;
-  margin-top: 40px;
+  padding: 40px 20px;
+  margin-top: 60px;
   text-align: center;
   border-top: 1px solid #222;
 }
@@ -278,274 +228,71 @@ body {
 }
 
 .footer-logo {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: bold;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 .footer-links {
-  margin: 10px 0 18px;
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  flex-wrap:wrap;
+  margin: 10px 0 20px;
 }
 
 .footer-links a {
   color: #bbb;
-  margin: 0 8px;
+  margin: 0 15px;
   text-decoration: none;
   font-size: 14px;
-  padding:6px 8px;
-  border-radius:6px;
 }
 
 .footer-links a:hover {
   color: #fff;
-  background: rgba(255,255,255,0.02);
 }
 
 .footer-copy {
   font-size: 13px;
   color: #777;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
-/* =================
-   RESPONSIVE RULES
-   ================= */
-
-/* Large tablets — reduce paddings and card scale */
-@media (max-width: 1024px) {
-  .navbar { padding: 12px 20px; }
-  .search-bar input { width: 180px; max-width: 34vw; }
-  .game-grid { gap: 16px; padding: 20px; }
-  .game-card img { height: 140px; }
-  .footer { padding: 28px 12px; }
+/* ==== FOOTER ==== */
+.footer {
+  background: #111;
+  color: #ddd;
+  padding: 40px 20px;
+  margin-top: 60px;
+  text-align: center;
+  border-top: 1px solid #222;
 }
 
-/* Tablets / Small laptops */
-@media (max-width: 820px) {
-  .navbar { padding: 10px 16px; }
-  .logo { font-size: 1.1rem; }
-  .search-bar input { width: 160px; max-width: 36vw; }
-  .auth-links a { padding: 6px 8px; font-size: 13px; }
-  .game-grid { padding: 18px 16px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
 }
 
-/* Mobile phones */
-@media (max-width: 600px) {
-  /* Header: make layout compact */
-  .navbar {
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-  }
-
-  /* hide nav links on small screens to save space (functionality unchanged) */
-  .nav-links {
-    display: none;
-  }
-
-  /* search becomes smaller */
-  .search-bar input {
-    width: 120px;
-    max-width: 55vw;
-    padding: 7px 10px;
-    font-size: 14px;
-  }
-
-  /* categories horizontally scrollable */
-  .categories {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .categories button {
-    padding: 7px 12px;
-    font-size: 13px;
-  }
-
-  /* grid: 2 columns preferred, cards fill available space */
-  .game-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    padding: 14px 12px;
-  }
-
-  .game-card {
-    max-width: none;
-    border-radius: 12px;
-  }
-
-  .game-card img {
-    height: 120px;
-  }
-
-  /* position login button so it doesn't hide other controls */
-  .login-btn {
-    top: 12px;
-    right: 12px;
-    padding: 8px 10px;
-    font-size: 14px;
-  }
-
-  /* footer stacked */
-  .footer {
-    padding: 24px 12px;
-    text-align: center;
-  }
-  .footer-logo { font-size: 20px; }
-  .footer-links { gap: 10px; }
+.footer-logo {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
-/* Very small phones (narrow) */
-@media (max-width: 380px) {
-  .search-bar input { width: 100px; max-width: 42vw; font-size:13px; padding:6px 8px; }
-  .logo { font-size: 1rem; }
-  .auth-links a { font-size: 13px; padding:6px 8px; }
-  .game-card img { height: 110px; }
-  .footer-logo { font-size: 18px; }
-  .footer-copy { font-size: 12px; }
+.footer-links {
+  margin: 10px 0 20px;
 }
 
-/* Accessibility: ensure focus states are visible on small screens */
-.game-card:focus-within,
-.game-card:focus {
-  outline: 3px solid rgba(255,98,0,0.14);
-  outline-offset: 4px;
+.footer-links a {
+  color: #bbb;
+  margin: 0 15px;
+  text-decoration: none;
+  font-size: 14px;
 }
 
-
-/* === Resolve duplicate login: header visible on desktop, floating button visible on mobile === */
-
-/* Default: show header auth, hide floating login button (desktop) */
-.login-btn {
-  display: none; /* hide floating button on larger screens */
+.footer-links a:hover {
+  color: #fff;
 }
 
-/* On small screens: hide header auth-links and show floating button */
-@media (max-width: 600px) {
-  .auth-links {
-    display: none !important;   /* hide header links on phones */
-  }
-  .login-btn {
-    display: block !important;  /* show floating login button on phones */
-  }
-}
-
-/* ===== Fix overlap: hide header auth on small screens & move floating login to bottom-right ===== */
-
-/* Default: hide floating login button on desktop */
-.login-btn {
-  display: none; /* keep header auth-links visible on larger screens */
-}
-
-/* Mobile: hide header auth-links and use floating login button (bottom-right) */
-@media (max-width: 600px) {
-  /* hide header links (Login / Sign up) to avoid duplicates/overlap */
-  .auth-links {
-    display: none !important;
-    pointer-events: none;
-    opacity: 0;
-    height: 0;
-    overflow: hidden;
-  }
-
-  /* show floating login button, placed bottom-right */
-  .login-btn {
-    display: block !important;
-    position: fixed;
-    bottom: 18px;
-    right: 14px;
-    top: auto !important;    /* override any previous top value */
-    padding: 10px 12px;
-    font-size: 14px;
-    border-radius: 10px;
-    z-index: 1200;           /* make sure it's above other elements */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
-    background: #ff4757;
-  }
-
-  /* ensure the search input has room and doesn't get clipped */
-  .search-bar input {
-    max-width: 55vw;
-    width: auto;
-    padding-right: 12px;
-  }
-
-  /* Make signup/link text smaller if still visible in other places */
-  .auth-links a {
-    font-size: 13px;
-    padding: 6px 8px;
-  }
-}
-
-/* Very small phones: slightly smaller floating button */
-@media (max-width: 380px) {
-  .login-btn {
-    bottom: 12px;
-    right: 10px;
-    padding: 8px 10px;
-    font-size: 13px;
-    border-radius: 8px;
-  }
-}
-
-
-/* ===== Center header nav-links and categories (filters) ===== */
-
-/* allow safe positioning of centered header nav */
-.navbar {
-  position: relative; /* used so .nav-links can be centered absolutely without disturbing layout */
-}
-
-/* center the top navigation links on larger screens */
-.nav-links {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 50%;
-  transform-origin: center;
-  transform: translate(-50%, -50%);
-  display: flex;
-  gap: 20px;
-  white-space: nowrap;
-}
-
-/* ensure nav-links don't overlap logo/search by limiting width and clipping */
-.nav-links {
-  max-width: 60%;
-  justify-content: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Center the category filter row */
-.categories {
-  justify-content: center !important; /* centers the pill buttons */
-  padding: 12px 20px;
-}
-
-/* If the categories overflow, keep horizontal scrolling but keep them visually centered */
-.categories[style] { justify-content: center; } /* fallback */
-
-/* Small screens: revert header nav to normal flow (avoid overlap) */
-@media (max-width: 820px) {
-  .nav-links {
-    position: static;
-    transform: none;
-    max-width: none;
-    margin-left: 6px; /* original spacing */
-  }
-  .navbar { align-items: center; }
-}
-
-/* If you also want the categories to snap to center when there is extra space */
-@media (min-width: 900px) {
-  .categories {
-    padding-left: 0;
-    padding-right: 0;
-    gap: 12px;
-  }
+.footer-copy {
+  font-size: 13px;
+  color: #777;
+  margin-top: 10px;
 }
 
