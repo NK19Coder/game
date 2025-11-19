@@ -769,6 +769,11 @@ app.get('/terms', (req, res) => {
   res.render('terms');
 });
 
+app.get('/privacy', (req, res) => {
+  res.render('privacy');
+}); 
+
+
 
 // Delete game
 app.post('/admin/games/delete/:id', requireAdmin, (req, res) => {
