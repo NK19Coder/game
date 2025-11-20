@@ -1,143 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zontal Clone</title>
-  <link rel="stylesheet" href="/css/style.css" />
-</head>
-<body>
-  <header class="navbar">
-    <div class="logo">🔥 VillasGame</div>
-    <nav class="nav-links">
-      <a href="#">Newest</a>
-      <a href="#">Most popular</a>
-      <a href="#">Random</a>
-    </nav>
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search games..." />
-    </div>
-    <div class="auth-links">
-      <a href="/login">Login</a>
-      <a href="/signup" class="signup">Sign up</a>
-    </div>
-  </header>
-
-  <div class="categories">
-    <button>Arcade</button>
-    <button>Puzzles</button>
-    <button>Shooting</button>
-    <button>Racing</button>
-    <button>Adventure</button>
-    <button>Multiplayer</button>
-    <button>Action</button>
-    <button>Sports</button>
-  </div>
-
-  <main class="game-grid" id="gameGrid">
-  <% games.forEach(game => { %>
-    <div
-      class="game-card"
-      tabindex="0"
-      data-title="<%= (game.title || '').toLowerCase() %>"
-      data-desc="<%= (game.short_desc || '').toLowerCase() %>">
-      <a href="/play/<%= game.id %>" target="_blank" rel="noopener noreferrer">
-        <img src="<%= game.image %>" alt="<%= game.title %>" />
-        <div class="game-title"><%= game.title %></div>
-      </a>
-    </div>
-  <% }) %>
-  <div id="noResults" style="display:none;text-align:center;grid-column:1/-1;padding:40px;color:#666;">
-    No games found matching your search
-  </div>
-</main>  -->
-
-  <!-- Login Button -->
-<!-- <button id="loginBtn" class="login-btn">Login</button> -->
-
-<!-- Login Modal -->
-<!-- <div id="loginModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Select Login Type</h2>
-    <div class="login-options">
-      <button onclick="window.location.href='/admin-login'">Login as Admin</button>
-      <button onclick="alert('User login coming soon!')">Login as User</button>
-    </div>
-  </div>
-</div>
-<script>
-  (function () {
-    const input = document.getElementById('searchInput');
-    const cards = Array.from(document.querySelectorAll('.game-card'));
-    const noResults = document.getElementById('noResults'); -->
-
-    <!-- // Read initial query from URL (?q=...) -->
-    <!-- const params = new URLSearchParams(window.location.search);
-    const initialQ = (params.get('q') || '').trim();
-    if (initialQ) input.value = initialQ;
-
-    function normalize(s){ return (s || '').toLowerCase().trim(); }
-
-    let debounce;
-    function applyFilter(raw) {
-      const q = normalize(raw);
-      let visible = 0;
-
-      cards.forEach(card => {
-        const title = card.dataset.title || '';
-        const desc  = card.dataset.desc || '';
-        const match = !q || title.includes(q) || desc.includes(q);
-        card.style.display = match ? '' : 'none';
-        if (match) visible++;
-      });
-
-      noResults.style.display = visible ? 'none' : '';
-
-      // Update ?q= in URL without reloading
-      const usp = new URLSearchParams(window.location.search);
-      if (q) usp.set('q', q); else usp.delete('q');
-      const newUrl = window.location.pathname + (usp.toString() ? `?${usp}` : '');
-      window.history.replaceState(null, '', newUrl);
-    }
-
-    // Debounce input for smoother typing
-    input.addEventListener('input', () => {
-      clearTimeout(debounce);
-      debounce = setTimeout(() => applyFilter(input.value), 120);
-    });
-
-    // Enter to open first visible card
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const first = cards.find(c => c.style.display !== 'none');
-        if (first) {
-          const a = first.querySelector('a[href]');
-          if (a) a.click();
-        }
-      }
-    });
-
-    // Run once on page load
-    applyFilter(input.value);
-  })();
-</script>
-
-
-<script>
-  const modal = document.getElementById('loginModal');
-  const btn = document.getElementById('loginBtn');
-  const span = document.getElementsByClassName('close')[0];
-  btn.onclick = () => modal.style.display = "block";
-  span.onclick = () => modal.style.display = "none";
-  window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
-</script>
-
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -168,6 +28,7 @@
 <body>
   <header class="navbar">
     <div class="logo">🔥 VillasGame</div>
+    <div class="hamburger" id="hamburger">&#9776;</div>
     <nav class="nav-links">
       <a href="#">Newest</a>
       <a href="#">Most popular</a>
@@ -181,6 +42,36 @@
       <a href="/signup" class="signup">Sign up</a>
     </div> 
   </header>
+
+ <!-- MOBILE MENU OVERLAY -->
+<div id="mobileMenu" class="mobile-menu">
+  <div class="mobile-menu-content">
+
+    <!-- Close Button -->
+    <div class="mobile-close">&times;</div>
+
+    <!-- Search inside menu -->
+    <div class="mobile-search">
+      <input type="text" placeholder="Search games..." id="mobileSearchInput" />
+    </div>
+
+    <!-- Navigation -->
+    <div class="mobile-nav-links">
+      <a href="#">Newest</a>
+      <a href="#">Most popular</a>
+      <a href="#">Random</a>
+    </div>
+
+    <!-- Auth Buttons -->
+    <div class="mobile-auth">
+      <a href="/login" class="login">Login</a>
+      <a href="/signup" class="signup">Sign up</a>
+    </div>
+
+  </div>
+</div>
+
+
 
   <div class="categories">
     <button>Arcade</button>
@@ -321,5 +212,32 @@
     closeBtn.onclick = () => { modal.style.display = "none"; modal.setAttribute('aria-hidden','true'); };
     window.onclick = (e) => { if (e.target == modal) { modal.style.display = "none"; modal.setAttribute('aria-hidden','true'); } };
   </script>
+
+  <script>
+  const mobileMenu = document.getElementById("mobileMenu");
+  const menuContent = document.querySelector(".mobile-menu-content");
+
+  document.querySelector(".hamburger").onclick = () => {
+    mobileMenu.style.display = "flex";
+    setTimeout(() => {
+      menuContent.style.transform = "translateX(0)";
+    }, 10);
+  };
+
+  document.querySelector(".mobile-close").onclick = () => {
+    menuContent.style.transform = "translateX(100%)";
+    setTimeout(() => { mobileMenu.style.display = "none"; }, 300);
+  };
+
+  // Clicking outside closes menu
+  mobileMenu.onclick = (e) => {
+    if (e.target === mobileMenu) {
+      menuContent.style.transform = "translateX(100%)";
+      setTimeout(() => { mobileMenu.style.display = "none"; }, 300);
+    }
+  };
+</script>
+
+
 </body>
 </html> 
