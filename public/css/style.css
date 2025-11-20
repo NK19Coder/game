@@ -11,7 +11,13 @@ body {
   color: white;
   font-family: 'Poppins', sans-serif;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
+.wrapper {
+  flex: 1;
+} 
 
 /* Navbar */
 .navbar {
