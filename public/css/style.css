@@ -134,11 +134,16 @@ body {
 /* Game grid */
 .game-grid {
   /* flexible card widths using minmax so it adapts to viewport */
-  display: grid;
+  /* display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 18px;
   padding: 26px 22px;
-  align-items: start;
+  align-items: start; */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 180px));
+    gap: 18px;
+    justify-content: center; 
+    padding: 26px 22px;
 }
 
 /* keep the --card-w var for backwards compatibility of styles */
@@ -367,14 +372,10 @@ body {
 
   /* grid: 2 columns preferred, cards fill available space */
   .game-grid {
-    /* grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
-    padding: 14px 12px; */
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 180px));
-    gap: 18px;
-    justify-content: center; 
-    padding: 26px 22px;
+    padding: 14px 12px;
+    
   }
 
   .game-card {
