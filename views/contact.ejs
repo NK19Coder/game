@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact – VillasGame</title>
+
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 80px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #ff6200;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #ccc;
+      max-width: 750px;
+      margin: 12px auto;
+    }
+
+    .email-box {
+      background: #151515;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 20px 25px;
+      display: inline-block;
+      margin-top: 30px;
+    }
+
+    .email-box a {
+      color: #ff6200;
+      font-size: 18px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .email-box a:hover { text-decoration: underline; }
+
+    /* footer */
+    .footer {
+      background: #111;
+      color: #ddd;
+      padding: 32px 16px;
+      margin-top: 60px;
+      text-align: center;
+      border-top: 1px solid #222;
+    }
+
+    .footer-logo { font-size: 22px; font-weight: bold; margin-bottom: 12px; }
+
+    .footer-links {
+      margin-bottom: 15px;
+    }
+    .footer-links a {
+      color: #bbb;
+      margin: 0 12px;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .footer-links a:hover { color: #fff; }
+
+    .footer-copy {
+      font-size: 13px;
+      color: #777;
+    }
+
+    @media (max-width:600px){
+      h1{ font-size:28px; }
+      .container{ margin-top:60px; }
+      .email-box{ padding:16px 20px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===========================
+          NAVIGATION
+=========================== -->
+<header class="navbar">
+  <div class="logo">🔥 VillasGame</div>
+
+  <nav class="nav-links">
+    <a href="/">Newest</a>
+    <a href="/popular">Most popular</a>
+    <a href="/random">Random</a>
+  </nav>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search games..." disabled style="opacity:0.5;">
+  </div>
+
+  <div class="auth-links">
+    <a href="/login">Login</a>
+    <a href="/signup" class="signup">Sign up</a>
+  </div>
+</header>
+
+<!-- ===========================
+          CONTACT PAGE
+=========================== -->
+<div class="container">
+  <h1>Contact Us</h1>
+
+  <p>
+    If you have any questions, suggestions, or face any issues while using VillasGame,
+    feel free to contact us. We are always happy to help and improve your experience.
+  </p>
+
+  <p>
+    You can reach out to us anytime through the email below:
+  </p>
+
+  <div class="email-box">
+    <a href="mailto:villasgame.office@gmail.com">villasgame.office@gmail.com</a>
+  </div>
+
+  <p style="margin-top:20px;">
+    We usually respond within 24–48 hours.<br>
+    Thank you for being a part of <strong>VillasGame</strong>!
+  </p>
+</div>
+
+<!-- ===========================
+            FOOTER
+=========================== -->
+<footer class="footer">
+  <div class="footer-logo">🔥 VillasGame</div>
+
+  <div class="footer-links">
+    <a href="/about">About</a>
+    <a href="/terms">Terms & Conditions</a>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/contact">Contact</a>
+  </div>
+
+  <p class="footer-copy">© <%= new Date().getFullYear() %> VillasGame. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
