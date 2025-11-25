@@ -411,7 +411,22 @@
 // Requirements: npm i express body-parser express-session better-sqlite3 bcryptjs multer adm-zip slugify dotenv ejs
 console.log("✅ Starting server (persistent-disk mode)");
 
-require('dotenv').config();
+require('dotenv').config(); 
+// ----------------- MONGODB (Players) -----------------
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("✅ MongoDB connected for PLAYER accounts"))
+.catch((err) => {
+  console.error("❌ MongoDB connection error:", err);
+  process.exit(1);
+});
+
+// ----------------- PLAYER USER MODEL -----------------
+const User = require("./models/User"); 
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -491,6 +506,14 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
+
+// ----------------- PLAYER SESSION INJECT -----------------
+app.use((req, res, next) => {
+  res.locals.player = req.session.player || null;
+  next();
+});
+//changes end
+
 
 // ---------- MULTER (disk storage) ----------
 // We store uploaded images directly to UPLOADS_DIR, and ZIP uploads also to a temp location then extract.
@@ -792,6 +815,86 @@ app.get('/blog/:slug', (req, res) => {
 
   res.render('blog-post', { post });
 });
+
+//changes new 
+
+// ----------------- PLAYER SIGNUP -----------------
+app.get("/signup", (req, res) => {
+  res.render("signup", { error: null });
+});
+
+app.post("/signup", async (req, res) => {
+  try {
+    const { username, email, password, confirmPassword } = req.body;
+
+    if (!username || !email || !password || !confirmPassword) {
+      return res.render("signup", { error: "All fields are required." });
+    }
+
+    if (password !== confirmPassword) {
+      return res.render("signup", { error: "Passwords do not match." });
+    }
+
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.render("signup", { error: "Email already exists." });
+    }
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      username,
+      email,
+      password: hashed
+    });
+
+    res.redirect("/login");
+  } catch (err) {
+    console.log("Signup error:", err);
+    res.render("signup", { error: "Something went wrong." });
+  }
+});
+
+// ----------------- PLAYER LOGIN -----------------
+app.get("/login", (req, res) => {
+  res.render("login", { error: null });
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.render("login", { error: "All fields are required." });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) return res.render("login", { error: "Invalid email or password." });
+
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) return res.render("login", { error: "Invalid email or password." });
+
+    req.session.player = {
+      id: user._id,
+      username: user.username,
+      email: user.email
+    };
+
+    res.redirect("/");
+  } catch (err) {
+    console.log("Login error:", err);
+    res.render("login", { error: "Something went wrong." });
+  }
+});
+
+// ----------------- PLAYER LOGOUT -----------------
+app.get("/logout", (req, res) => {
+  req.session.player = null;
+  res.redirect("/");
+});
+
+//changes end
+
 
 
 
