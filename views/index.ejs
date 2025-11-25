@@ -31,16 +31,21 @@
     <div class="hamburger" id="hamburger">&#9776;</div>
     <nav class="nav-links">
       <a href="/about">About</a> 
-      <a href="/blog">Blog</a>
+      <a href="/blog">Blogs</a>
       <a href="/contact">Contact</a> 
     </nav>
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off" />
     </div>
-    <div class="auth-links">
-      <a href="/login">Login</a>    
-      <a href="/signup" class="signup">Sign up</a>
-    </div> 
+     <div class="auth-links">
+      <% if (!player) { %>
+        <a href="/login">Login</a>
+        <a href="/signup" class="signup">Sign up</a>
+      <% } else { %>
+        <span style="color:#fff; margin-right:10px;">Hi, <%= player.username %></span>
+        <a href="/logout" class="signup" style="background:#ff4d4d;">Logout</a>
+      <% } %>
+    </div>
   </header>
 
  <!-- MOBILE MENU OVERLAY -->
@@ -64,9 +69,16 @@
 
     <!-- Auth Buttons -->
     <div class="mobile-auth">
-      <a href="/login" class="login">Login</a>
-      <a href="/signup" class="signup">Sign up</a>
-    </div>
+      <% if (!player) { %>
+        <a href="/login" class="login">Login</a>
+        <a href="/signup" class="signup">Sign up</a>
+      <% } else { %>
+        <p style="color:#fff; font-size:15px; margin-bottom:10px;">
+          Logged in as <b><%= player.username %></b>
+        </p>
+        <a href="/logout" class="signup" style="background:#ff4d4d;">Logout</a>
+      <% } %>
+    </div>
 
   </div>
 </div>
@@ -97,20 +109,7 @@
   </main>
   </div>
 
-  <!-- Login Button -->
-  <button id="loginBtn" class="login-btn">Login</button>
-
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal" aria-hidden="true">
-    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-      <span class="close" aria-label="Close">&times;</span>
-      <h2 id="loginTitle">Select Login Type</h2>
-      <div class="login-options">
-        <button onclick="window.location.href='/admin-login'">Login as Admin</button>
-        <button onclick="alert('User login coming soon!')">Login as User</button>
-      </div>
-    </div>
-  </div>
+  
 
 <footer class="footer">
     <div class="footer-container">
@@ -195,14 +194,7 @@
     })();
   </script>
 
-  <script>
-    const modal = document.getElementById('loginModal');
-    const btn = document.getElementById('loginBtn');
-    const closeBtn = document.getElementsByClassName('close')[0];
-    btn.onclick = () => { modal.style.display = "block"; modal.setAttribute('aria-hidden','false'); };
-    closeBtn.onclick = () => { modal.style.display = "none"; modal.setAttribute('aria-hidden','true'); };
-    window.onclick = (e) => { if (e.target == modal) { modal.style.display = "none"; modal.setAttribute('aria-hidden','true'); } };
-  </script>
+ 
 
   <script>
   const mobileMenu = document.getElementById("mobileMenu");
