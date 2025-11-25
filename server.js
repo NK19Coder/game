@@ -416,17 +416,20 @@ require('dotenv').config();
 const mongoose = require("mongoose");
 
 mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  // Removed: useNewUrlParser: true
+  // Removed: useUnifiedTopology: true
+  // You can include other necessary options here if needed,
+  // but for a basic connection, no options are typically required.
 })
 .then(() => console.log("✅ MongoDB connected for PLAYER accounts"))
 .catch((err) => {
   console.error("❌ MongoDB connection error:", err);
-  process.exit(1);
+  // It's good practice to exit the process if the database connection fails
+  process.exit(1); 
 });
 
 // ----------------- PLAYER USER MODEL -----------------
-const User = require("./models/User"); 
+const User = require("./models/User");
 
 const express = require('express');
 const bodyParser = require('body-parser');
