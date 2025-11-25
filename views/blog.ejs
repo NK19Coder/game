@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaming Blogs – VillasGame</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <a class="logo" href="/">🔥 VillasGame</a>
+
+    <nav class="nav-links">
+      <a href="/about">About</a>  
+      <a href="/blog">Blog</a>
+      <a href="/contact">Contact</a>
+    </nav>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Search..." />
+    </div>
+
+    <div class="auth-links">
+      <a href="/login">Login</a>
+      <a href="/signup" class="signup">Sign Up</a>
+    </div>
+
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </header>
+
+  <!-- MOBILE MENU -->
+  <div id="mobileMenu" class="mobile-menu">
+    <div class="mobile-menu-content">
+      <div class="mobile-close">&times;</div>
+
+      <div class="mobile-search">
+        <input type="text" placeholder="Search..." />
+      </div>
+
+      <div class="mobile-nav-links">
+        <a href="/about">About</a>
+        <a href="/blog">Blog</a>
+        <a href="/contact">Contact</a>
+      </div>
+
+      <div class="mobile-auth">
+        <a href="/login" class="login">Login</a>
+        <a href="/signup">Sign up</a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MAIN BLOG CONTENT -->
+  <div class="wrapper">
+    <section style="max-width: 1100px; margin: auto; padding: 40px 20px;">
+
+      <h1 style="text-align:center; margin-bottom:30px; font-size:32px; font-weight:700;">
+        🎮 Gaming Blogs – Latest Articles
+      </h1>
+
+      <div class="game-grid">
+  <% blogs.forEach(b => { %>
+    <a href="/blog/<%= b.slug %>" class="game-card">
+        <img src="<%= b.image %>" alt="<%= b.title %>" />
+        <div class="game-title"><%= b.title %></div>
+    </a>
+  <% }) %>
+</div>
+
+
+    </section>
+  </div>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-container">
+      <a href="/" class="footer-logo">🔥 VillasGame</a>
+
+      <div class="footer-links">
+        <a href="/about">About</a>
+        <a href="/terms">Terms & Conditions</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/contact">Contact</a>
+        <a href="/blog">Blog</a>
+      </div>
+
+      <p class="footer-copy">© <%= new Date().getFullYear() %> VillasGame. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <script>
+    // Mobile menu
+    const mobileMenu = document.getElementById("mobileMenu");
+    const menuContent = document.querySelector(".mobile-menu-content");
+
+    document.getElementById("hamburger").onclick = () => {
+      mobileMenu.style.display = "flex";
+      setTimeout(() => { menuContent.style.transform = "translateX(0)"; }, 10);
+    };
+
+    document.querySelector(".mobile-close").onclick = () => {
+      menuContent.style.transform = "translateX(100%)";
+      setTimeout(() => { mobileMenu.style.display = "none"; }, 300);
+    };
+  </script>
+
+</body>
+</html>
