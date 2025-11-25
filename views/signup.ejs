@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup – 🔥 VillasGame</title>
+
+  <!-- Global layout styles (navbar, footer, theme) -->
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1b1b3a 0, #06060a 55%, #000 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    /* Wrapper under navbar */
+    .auth-page {
+      min-height: calc(100vh - 150px);
+      padding: 110px 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Glass premium card */
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(150deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border-radius: 22px;
+      padding: 28px 28px 26px;
+      box-shadow:
+        0 18px 50px rgba(0, 0, 0, 0.65),
+        0 0 0 1px rgba(255,255,255,0.05);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .auth-badge {
+      width: 70px;
+      height: 70px;
+      border-radius: 999px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      background: radial-gradient(circle at 30% 20%, #ffce6b 0, #ff4d4d 40%, #ff007a 90%);
+      box-shadow: 0 0 26px rgba(255, 77, 77, 0.5);
+    }
+
+    .auth-title {
+      text-align: center;
+      font-size: 27px;
+      margin-top: 6px;
+      font-weight: 700;
+    }
+
+    .auth-subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #c8c8d8;
+      margin-bottom: 24px;
+    }
+
+    .input-row {
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .input-label {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #d8d8e5;
+      display: block;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: rgba(15,15,25,0.96);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: 0.15s ease;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: #ff4d4d;
+      box-shadow: 0 0 0 1px rgba(255,77,77,0.4);
+      background: rgba(20,20,35,0.98);
+    }
+
+    .input-icon {
+      font-size: 18px;
+      opacity: 0.85;
+    }
+
+    .input-field {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .input-field::placeholder {
+      color: #7e7f92;
+    }
+
+    .primary-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 13px 16px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(130deg, #ff7a4d, #ff4d4d);
+      color: #fff;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 12px 25px rgba(255,77,77,0.55);
+      transition: 0.15s ease;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 38px rgba(255,77,77,0.65);
+      opacity: 0.97;
+    }
+
+    .primary-btn:active {
+      transform: translateY(0px);
+      opacity: 0.9;
+    }
+
+    .auth-footer-text {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 14px;
+      color: #b0b0c4;
+    }
+
+    .auth-footer-text a {
+      color: #ff6b6b;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer-text a:hover {
+      text-decoration: underline;
+    }
+
+    .errorBox {
+      background: rgba(255,60,60,0.12);
+      padding: 10px 12px;
+      color: #ffbbbb;
+      border: 1px solid rgba(255,77,77,0.45);
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    @media(max-width: 480px) {
+      .auth-page { padding: 95px 14px 30px; }
+      .auth-card { padding: 24px 20px 22px; }
+      .auth-title { font-size: 23px; }
+      .input-wrapper { padding: 11px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 🔥 SAME NAVBAR LIKE INDEX -->
+  <header class="navbar">
+    <div class="logo">🔥 VillasGame</div>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+
+    <nav class="nav-links">
+      <a href="#">Newest</a>
+      <a href="#">Most popular</a>
+      <a href="#">Random</a>
+    </nav>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Search games..." autocomplete="off" />
+    </div>
+
+    <div class="auth-links">
+      <% if (!player) { %>
+        <a href="/login">Login</a>
+        <a href="/signup" class="signup">Sign up</a>
+      <% } else { %>
+        <span style="color:#fff; margin-right:10px;">Hi, <%= player.username %></span>
+        <a href="/logout" class="signup" style="background:#ff4d4d;">Logout</a>
+      <% } %>
+    </div>
+  </header>
+
+  <!-- MOBILE MENU -->
+  <div id="mobileMenu" class="mobile-menu">
+    <div class="mobile-menu-content">
+      <div class="mobile-close">&times;</div>
+
+      <div class="mobile-search">
+        <input type="text" placeholder="Search games..." />
+      </div>
+
+      <div class="mobile-nav-links">
+        <a href="#">Newest</a>
+        <a href="#">Most popular</a>
+        <a href="#">Random</a>
+      </div>
+
+      <div class="mobile-auth">
+        <% if (!player) { %>
+          <a href="/login" class="login">Login</a>
+          <a href="/signup" class="signup">Sign up</a>
+        <% } else { %>
+          <p style="color:#fff; font-size:15px;">Logged in as <b><%= player.username %></b></p>
+          <a href="/logout" class="signup" style="background:#ff4d4d;">Logout</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREMIUM SIGNUP FORM -->
+  <main class="auth-page">
+    <div class="auth-card">
+
+      <!-- <div class="auth-badge">🔥</div> -->
+
+      <div class="auth-title">Create Your Account</div>
+      <div class="auth-subtitle">Join the community & start playing instantly</div>
+
+      <% if (error) { %>
+        <div class="errorBox"><%= error %></div>
+      <% } %>
+
+      <form action="/signup" method="POST">
+
+        <div class="input-row">
+          <label class="input-label"></label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input
+              type="text"
+              name="username"
+              class="input-field"
+              placeholder="Username"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="input-row">
+          <label class="input-label"></label>
+          <div class="input-wrapper">
+            <span class="input-icon">📧</span>
+            <input
+              type="email"
+              name="email"
+              class="input-field"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="input-row">
+          <label class="input-label"></label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              name="password"
+              class="input-field"
+              placeholder="Password (Min 6 chars)"
+              minlength="6"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="input-row">
+          <label class="input-label"></label>
+          <div class="input-wrapper">
+            <span class="input-icon">✔</span>
+            <input
+              type="password"
+              name="confirmPassword"
+              class="input-field"
+              placeholder="Confirm Password"
+              minlength="6"
+              required
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="primary-btn">
+          Create Account
+        </button>
+
+      </form>
+
+      <p class="auth-footer-text">
+        Already have an account?
+        <a href="/login">Login</a>
+      </p>
+    </div>
+  </main>
+
+  <!-- FOOTER (same as index) -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-logo">🔥 VillasGame</div>
+      <div class="footer-links">
+        <a href="/about">About</a>
+        <a href="/terms">Terms & Conditions</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <p class="footer-copy">© <%= new Date().getFullYear() %> VillasGame. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Mobile menu JS -->
+  <script>
+    const mobileMenu = document.getElementById("mobileMenu");
+    const menuContent = document.querySelector(".mobile-menu-content");
+
+    document.querySelector(".hamburger").onclick = () => {
+      mobileMenu.style.display = "flex";
+      setTimeout(() => {
+        menuContent.style.transform = "translateX(0)";
+      }, 10);
+    };
+
+    document.querySelector(".mobile-close").onclick = () => {
+      menuContent.style.transform = "translateX(100%)";
+      setTimeout(() => { mobileMenu.style.display = "none"; }, 300);
+    };
+
+    mobileMenu.onclick = (e) => {
+      if (e.target === mobileMenu) {
+        menuContent.style.transform = "translateX(100%)";
+        setTimeout(() => { mobileMenu.style.display = "none"; }, 300);
+      }
+    };
+  </script>
+
+</body>
+</html>
