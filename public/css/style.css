@@ -38,6 +38,8 @@ body {
   color: #ff6200;
   letter-spacing: 1px;
   white-space: nowrap;
+  text-decoration: none;
+  color: inherit;
 }
 
 .nav-links {
