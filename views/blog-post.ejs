@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= post.title %> – VillasGame Blog</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<header class="navbar">
+  <a class="logo" href="/">🔥 VillasGame</a>
+
+  <nav class="nav-links">
+    <a href="/about">About</a>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/contact">Contact</a>
+    <a href="/blog">Blog</a>
+  </nav>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search...">
+  </div>
+
+  <div class="auth-links">
+    <a href="/login">Login</a>
+    <a href="/signup" class="signup">Sign Up</a>
+  </div>
+</header>
+
+<div class="wrapper">
+  <section style="max-width:900px; margin:auto; padding:40px 20px;">
+    
+    <h1 style="font-size:34px; font-weight:700; margin-bottom:20px;">
+      <%= post.title %>
+    </h1>
+
+    <img src="<%= post.image %>" 
+         style="width:100%; border-radius:14px; margin-bottom:25px;" />
+
+    <article style="white-space:pre-line; font-size:18px; line-height:1.8; color:#ddd;">
+      <%= post.content %>
+    </article>
+
+  </section>
+</div>
+
+<footer class="footer">
+  <div class="footer-container">
+    <a href="/" class="footer-logo">🔥 VillasGame</a>
+
+    <div class="footer-links">
+      <a href="/about">About</a>
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/contact">Contact</a>
+      <a href="/blog">Blog</a>
+    </div>
+
+    <p class="footer-copy">© <%= new Date().getFullYear() %> VillasGame</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -423,6 +423,9 @@ const slugify = require('slugify');
 const path = require('path');
 const fs = require('fs');
 const Database = require('better-sqlite3');
+const blogList = require('./data/blogList');
+
+
 
 const app = express();
 
@@ -776,6 +779,21 @@ app.get('/privacy', (req, res) => {
 app.get('/contact', (req, res) => {
   res.render('contact');
 });
+
+// Blog list page
+app.get('/blog', (req, res) => {
+  res.render('blog', { blogs: blogList });
+});
+
+// Individual blog page
+app.get('/blog/:slug', (req, res) => {
+  const post = blogList.find(b => b.slug === req.params.slug);
+  if (!post) return res.status(404).send("Blog not found");
+
+  res.render('blog-post', { post });
+});
+
+
 
 
 
